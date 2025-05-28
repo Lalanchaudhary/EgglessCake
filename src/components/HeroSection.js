@@ -36,7 +36,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-      <BackDropSection />
       <CakeGallery />
     </>
   );

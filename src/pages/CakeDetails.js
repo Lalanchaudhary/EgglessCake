@@ -1,12 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import cake from '../assets/cake.jpg';
+import { useCart } from '../context/CartContext';
 
 const CakeDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('medium');
+  const {addToCart} = useCart();
+  const scrollContainerRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: -300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: 300,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // Sample cake data - replace with your actual data
   const cakeData = {
@@ -52,6 +73,73 @@ const CakeDetails = () => {
     ]
   };
 
+  // Sample related cakes data
+  const relatedCakes = [
+    {
+      id: 2,
+      name: 'Vanilla Dream Cake',
+      price: 23,
+      image: cake,
+      description: 'Light and fluffy vanilla cake with buttercream frosting'
+    },
+    {
+      id: 3,
+      name: 'Red Velvet Delight',
+      price: 28,
+      image: cake,
+      description: 'Classic red velvet with cream cheese frosting'
+    },
+    {
+      id: 4,
+      name: 'Carrot Cake Special',
+      price: 26,
+      image: cake,
+      description: 'Moist carrot cake with walnuts and cream cheese frosting'
+    },
+        {
+      id: 2,
+      name: 'Vanilla Dream Cake',
+      price: 23,
+      image: cake,
+      description: 'Light and fluffy vanilla cake with buttercream frosting'
+    },
+    {
+      id: 3,
+      name: 'Red Velvet Delight',
+      price: 28,
+      image: cake,
+      description: 'Classic red velvet with cream cheese frosting'
+    },
+    {
+      id: 4,
+      name: 'Carrot Cake Special',
+      price: 26,
+      image: cake,
+      description: 'Moist carrot cake with walnuts and cream cheese frosting'
+    },
+      {
+      id: 5,
+      name: 'Vanilla Dream Cake',
+      price: 23,
+      image: cake,
+      description: 'Light and fluffy vanilla cake with buttercream frosting'
+    },
+    {
+      id: 6,
+      name: 'Red Velvet Delight',
+      price: 28,
+      image: cake,
+      description: 'Classic red velvet with cream cheese frosting'
+    },
+    {
+      id: 7,
+      name: 'Carrot Cake Special',
+      price: 26,
+      image: cake,
+      description: 'Moist carrot cake with walnuts and cream cheese frosting'
+    }
+  ];
+
   const handleQuantityChange = (value) => {
     if (value >= 1) {
       setQuantity(value);
@@ -59,6 +147,7 @@ const CakeDetails = () => {
   };
 
   const handleAddToCart = () => {
+    addToCart(cakeData);
     // Add to cart logic here
     console.log('Added to cart:', {
       cake: cakeData.name,
@@ -224,6 +313,63 @@ const CakeDetails = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Related Cakes Section */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">You May Also Like</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={scrollLeft}
+                className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+                aria-label="Scroll left"
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={scrollRight}
+                className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+                aria-label="Scroll right"
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div 
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x snap-mandatory"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
+            {relatedCakes.map((cake) => (
+              <div
+                key={cake.id}
+                className="flex-none w-[280px] md:w-[320px] bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer snap-start"
+                onClick={() => navigate(`/cake/${cake.id}`)}
+              >
+                <div className="aspect-square">
+                  <img
+                    src={cake.image}
+                    alt={cake.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg text-gray-900 mb-1 line-clamp-1">{cake.name}</h3>
+                  <p className="text-gray-600 text-sm mb-2 line-clamp-2">{cake.description}</p>
+                  <p className="text-rose-500 font-semibold">${cake.price}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

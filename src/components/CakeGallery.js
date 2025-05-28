@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import cake from '../assets/cake.jpg';
+import BackDropSection from './BackDropSection';
 
 const CakeGallery = () => {
   const navigate = useNavigate();
@@ -91,6 +92,7 @@ const CakeGallery = () => {
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-amber-50 p-4 lg:p-8">
       <CakeSection title="Our Trending Cakes" cakes={trendingCakes} />
       <CakeSection title="Surprise Your Love" cakes={surpriseCakes} backdrop />
+      <BackDropSection />
       <CakeSection title="Our Best Sellers" cakes={bestSellers} />
     </div>
   );

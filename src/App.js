@@ -9,7 +9,8 @@ import CakeDetails from './pages/CakeDetails'
 import Cart from './pages/Cart'
 import { CartProvider } from './context/CartContext'
 import Footer from './components/Footer'
-
+import Home from './components/Home'
+import Products from './components/Products'
 const App = () => {
   return (
     <CartProvider>
@@ -19,6 +20,7 @@ const App = () => {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<HeroSection />} />
+              <Route path="/products" element={<Products />} />
               <Route path="/all-cakes" element={<AllCakes />} />
               <Route path="/cake/:id" element={<CakeDetails />} />
               <Route path="/cart" element={<Cart />} />

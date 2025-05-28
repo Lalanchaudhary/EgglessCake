@@ -3,7 +3,7 @@ import backdrop from '../assets/backdrop.jpg'; // Use your image path here
 
 const BackDropSection = () => {
   return (
-    <section className="bg-white py-12 px-4 md:px-8">
+    <section className="bg-gradient-to-br from-rose-50 to-amber-50 py-12 px-4 md:px-8">
       <div className="text-center mb-10">
         <h2 className="text-2xl md:text-4xl font-semibold text-yellow-800 mb-2">
           Food of The Gods, Freshly Baked!
