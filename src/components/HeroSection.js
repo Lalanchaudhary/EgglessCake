@@ -7,16 +7,16 @@ import Carousel from "./Carousel";
 const HeroSection = () => {
   let Heroimages = [
     {
-      image: "https://images.bewakoof.com/uploads/grid/app/1x1-common-1709616659.gif",
+      image: "https://bkmedia.bakingo.com/paytm-mango_cake_desktop.jpg",
     },
     {
-      image: "https://images.bewakoof.com/uploads/grid/app/Boyfriend-Tshirt-Women-1x1-banner--2--1709483581.jpg",
+      image: "https://bkmedia.bakingo.com/birthday_cake_desktop-WB.jpg",
     },
     {
-      image: "https://images.bewakoof.com/uploads/grid/app/EOSS-1X1-top-corner-unit-copy-ezgif-com-optimize-1709535154.gif",
+      image: "https://bkmedia.bakingo.com/anniversary-banner-desktop_3.jpg",
     },
     {
-      image: "https://images.bewakoof.com/uploads/grid/app/1x1-Banner-Graphic-Printed-Oversized-Tshirts-Common--2--1709734299.gif"
+      image: "https://bkmedia.bakingo.com/regular-cake-desktop_12.jpg"
     }
   ]
   return (

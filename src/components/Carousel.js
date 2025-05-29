@@ -31,6 +31,8 @@ function Carousel(props) {
   });
 
   return (
+    <>
+    
     <div className="w-screen px-4 py-6">
       <div className="slider-container">
         <Slider {...settings}>
@@ -60,6 +62,7 @@ function Carousel(props) {
         </Slider>
       </div>
     </div>
+    </>
   );
 }
 
