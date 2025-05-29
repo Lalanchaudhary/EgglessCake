@@ -42,9 +42,9 @@ const CakeGallery = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       <div className="w-full p-4">
-        <h3 className="font-semibold text-lg mb-1 text-gray-800 group-hover:text-rose-500 transition-colors duration-300">{cake.name}</h3>
-        <p className="text-rose-500 font-medium mb-3">${cake.price}</p>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <h3 className="font-semibold text-base sm:text-lg md:text-xl mb-1 text-gray-800 group-hover:text-rose-500 transition-colors duration-300">{cake.name}</h3>
+        <p className="text-rose-500 font-medium text-sm sm:text-base mb-3">${cake.price}</p>
+        <div className="hidden sm:flex flex-col sm:flex-row gap-2">
           <button 
             className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
             onClick={(e) => {
@@ -77,7 +77,7 @@ const CakeGallery = () => {
           <svg className="absolute bottom-4 right-4 w-16 h-16 opacity-20" fill="#e098b0" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
       )}
-      <h2 className="text-3xl font-bold mb-6 text-left text-[#1F2937] relative z-10">{title}</h2>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-left text-[#1F2937] relative z-10">{title}</h2>
       <div className={backdrop ? "relative z-10" : ""}>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
           {cakes.map(cake => (
