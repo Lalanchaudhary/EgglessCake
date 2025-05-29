@@ -30,23 +30,23 @@ const CakeGallery = () => {
 
   const CakeCard = ({ cake }) => (
     <div 
-      className="bg-[#f5f1f2] rounded-xl shadow-md overflow-hidden flex flex-col items-center p-3 mb-2 transition hover:shadow-lg cursor-pointer"
+      className="group bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
       onClick={() => navigate(`/cake/${cake.id}`)}
     >
-      <div className="w-full aspect-square flex items-center justify-center">
+      <div className="w-full aspect-square relative overflow-hidden p-4">
         <img
           src={cake.image}
           alt={cake.name}
-          className="w-full h-full object-cover rounded-lg"
+          className="w-full h-full rounded-lg object-cover transition-transform duration-500 group-hover:scale-110"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      <div className="w-full text-center mt-2">
-        <h3 className="font-semibold text-base sm:text-lg mb-1 text-gray-800">{cake.name}</h3>
-        <p className="text-gray-600 mb-1 text-sm sm:text-base">${cake.price}</p>
-        {/* Buttons only on sm and up */}
-        <div className="hidden sm:flex flex-col sm:flex-row gap-2 mt-2">
+      <div className="w-full p-4">
+        <h3 className="font-semibold text-lg mb-1 text-gray-800 group-hover:text-rose-500 transition-colors duration-300">{cake.name}</h3>
+        <p className="text-rose-500 font-medium mb-3">${cake.price}</p>
+        <div className="flex flex-col sm:flex-row gap-2">
           <button 
-            className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded transition"
+            className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
             onClick={(e) => {
               e.stopPropagation();
               // Add to cart logic here
@@ -55,13 +55,13 @@ const CakeGallery = () => {
             Add to Cart
           </button>
           <button 
-            className="flex-1 border border-rose-300 text-rose-400 hover:bg-rose-50 px-4 py-2 rounded transition"
+            className="flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/cake/${cake.id}`);
             }}
           >
-            More Details
+            Details
           </button>
         </div>
       </div>

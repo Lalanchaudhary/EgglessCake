@@ -89,26 +89,40 @@ const AllCakes = () => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {data.cakes.map(cake => (
-                  <div key={cake.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                    <div className="relative aspect-square">
+                  <div 
+                    key={cake.id} 
+                    className="group bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+                    onClick={() => navigate(`/cake/${cake.id}`)}
+                  >
+                    <div className="w-full aspect-square relative overflow-hidden">
                       <img
                         src={cake.image}
                         alt={cake.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2">{cake.name}</h3>
-                      <p className="text-gray-600 mb-3">${cake.price}</p>
+                    <div className="w-full p-4">
+                      <h3 className="font-semibold text-lg mb-1 text-gray-800 group-hover:text-rose-500 transition-colors duration-300">{cake.name}</h3>
+                      <p className="text-rose-500 font-medium mb-3">${cake.price}</p>
                       <div className="flex flex-col sm:flex-row gap-2">
-                        <button className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded transition">
+                        <button 
+                          className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Add to cart logic here
+                          }}
+                        >
                           Add to Cart
                         </button>
                         <button 
-                          onClick={() => navigate(`/cake/${cake.id}`)}
-                          className="flex-1 border border-rose-300 text-rose-400 hover:bg-rose-50 px-4 py-2 rounded transition"
+                          className="flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/cake/${cake.id}`);
+                          }}
                         >
-                          More Details
+                          Details
                         </button>
                       </div>
                     </div>
@@ -128,26 +142,40 @@ const AllCakes = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cakeCategories[activeSection].cakes.map(cake => (
-                <div key={cake.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                  <div className="relative aspect-square">
+                <div 
+                  key={cake.id} 
+                  className="group bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+                  onClick={() => navigate(`/cake/${cake.id}`)}
+                >
+                  <div className="w-full aspect-square relative overflow-hidden">
                     <img
                       src={cake.image}
                       alt={cake.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-2">{cake.name}</h3>
-                    <p className="text-gray-600 mb-3">${cake.price}</p>
+                  <div className="w-full p-4">
+                    <h3 className="font-semibold text-lg mb-1 text-gray-800 group-hover:text-rose-500 transition-colors duration-300">{cake.name}</h3>
+                    <p className="text-rose-500 font-medium mb-3">${cake.price}</p>
                     <div className="flex flex-col sm:flex-row gap-2">
-                      <button className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded transition">
+                      <button 
+                        className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Add to cart logic here
+                        }}
+                      >
                         Add to Cart
                       </button>
                       <button 
-                        onClick={() => navigate(`/cake/${cake.id}`)}
-                        className="flex-1 border border-rose-300 text-rose-400 hover:bg-rose-50 px-4 py-2 rounded transition"
+                        className="flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/cake/${cake.id}`);
+                        }}
                       >
-                        More Details
+                        Details
                       </button>
                     </div>
                   </div>
