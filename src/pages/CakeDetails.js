@@ -10,6 +10,15 @@ const CakeDetails = () => {
   const [selectedSize, setSelectedSize] = useState('medium');
   const {addToCart} = useCart();
   const scrollContainerRef = useRef(null);
+  
+  // New state for review form and modal
+  const [newReview, setNewReview] = useState({
+    rating: 0,
+    comment: '',
+    name: ''
+  });
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -156,6 +165,34 @@ const CakeDetails = () => {
     });
   };
 
+  // Add new function to handle review submission
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (newReview.rating === 0 || !newReview.comment || !newReview.name) {
+      alert('Please fill in all fields and select a rating');
+      return;
+    }
+
+    const review = {
+      id: cakeData.reviews.length + 1,
+      name: newReview.name,
+      rating: newReview.rating,
+      comment: newReview.comment,
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    // In a real application, you would send this to your backend
+    cakeData.reviews.unshift(review);
+    
+    // Reset form and close modal
+    setNewReview({
+      rating: 0,
+      comment: '',
+      name: ''
+    });
+    setIsReviewModalOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -283,9 +320,19 @@ const CakeDetails = () => {
                 </div>
               </div>
 
-              {/* Reviews */}
+              {/* Reviews Section */}
               <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold mb-4">Customer Reviews</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Customer Reviews</h3>
+                  <button
+                    onClick={() => setIsReviewModalOpen(true)}
+                    className="bg-rose-300 hover:bg-rose-400 text-white font-semibold px-4 py-2 rounded-lg transition"
+                  >
+                    Write a Review
+                  </button>
+                </div>
+
+                {/* Existing Reviews */}
                 <div className="space-y-4">
                   {cakeData.reviews.map((review) => (
                     <div key={review.id} className="bg-gray-50 p-4 rounded-lg">
@@ -372,6 +419,95 @@ const CakeDetails = () => {
             ))}
           </div>
         </div>
+
+        {/* Review Modal */}
+        {isReviewModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold">Write a Review</h3>
+                <button
+                  onClick={() => setIsReviewModalOpen(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <form onSubmit={handleReviewSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                  <input
+                    type="text"
+                    value={newReview.name}
+                    onChange={(e) => setNewReview({...newReview, name: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-300"
+                    placeholder="Enter your name"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setNewReview({...newReview, rating: star})}
+                        onMouseEnter={() => setHoveredRating(star)}
+                        onMouseLeave={() => setHoveredRating(0)}
+                        className="focus:outline-none"
+                      >
+                        <svg
+                          className={`w-8 h-8 ${
+                            star <= (hoveredRating || newReview.rating)
+                              ? 'text-yellow-400'
+                              : 'text-gray-300'
+                          }`}
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+                  <textarea
+                    value={newReview.comment}
+                    onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-300"
+                    rows="4"
+                    placeholder="Share your experience with this cake..."
+                    required
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsReviewModalOpen(false)}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-rose-300 hover:bg-rose-400 text-white font-semibold px-6 py-2 rounded-lg transition"
+                  >
+                    Submit Review
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
