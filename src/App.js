@@ -11,6 +11,9 @@ import { CartProvider } from './context/CartContext'
 import Footer from './components/Footer'
 import Home from './components/Home'
 import Products from './components/Products'
+import Profile from './pages/Profile'
+import UserProfile from './pages/UserProfile'
+
 const App = () => {
   return (
     <CartProvider>
@@ -24,6 +27,8 @@ const App = () => {
               <Route path="/all-cakes" element={<AllCakes />} />
               <Route path="/cake/:id" element={<CakeDetails />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/user-profile" element={<UserProfile />} />
             </Routes>
           </main>
           <Footer />

@@ -98,7 +98,10 @@ export function NavbarDemo() {
             </button>
 
             {/* Profile Icon */}
-            <button className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors duration-300">
+            <button 
+              onClick={() => navigate('/profile')}
+              className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors duration-300"
+            >
               <svg
                 className="w-5 h-5 md:w-6 md:h-6 text-gray-600"
                 fill="none"
