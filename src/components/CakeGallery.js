@@ -71,8 +71,8 @@ const CakeGallery = () => {
     {
       id: 1,
       name: 'Classic Chocolate Cake',
-      price: 25,
-      image: cake,
+      price: 825,
+      image: "https://bkmedia.bakingo.com/choco-truffle-cake0005choc-a.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.5,
       reviewCount: 128,
       description: 'A rich and moist chocolate cake topped with creamy chocolate frosting.'
@@ -80,8 +80,8 @@ const CakeGallery = () => {
     {
       id: 2,
       name: 'Chocolate Truffle Cake',
-      price: 30,
-      image: cake,
+      price: 530,
+      image: "https://bkmedia.bakingo.com/mango-naked-cake-cake4692mang-A_0.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.8,
       reviewCount: 95,
       description: 'Decadent layers of chocolate cake filled with velvety chocolate truffle.'
@@ -89,8 +89,8 @@ const CakeGallery = () => {
     {
       id: 3,
       name: 'Chocolate Fudge Cake',
-      price: 28,
-      image: cake,
+      price: 328,
+      image: "https://bkmedia.bakingo.com/choco-vanilla-cake0006chva-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.3,
       reviewCount: 76,
       description: 'Indulgent fudge cake with a gooey chocolate center and rich ganache topping.'
@@ -98,8 +98,17 @@ const CakeGallery = () => {
     {
       id: 4,
       name: 'Chocolate Fudge Cake',
-      price: 28,
-      image: cake,
+      price: 1228,
+      image: "https://bkmedia.bakingo.com/fresh-fruit-cake0014frui-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
+      rating: 4.7,
+      reviewCount: 112,
+      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
+    },
+    {
+      id: 5,
+      name: 'Chocolate Fudge Cake',
+      price: 1228,
+      image: "https://bkmedia.bakingo.com/mango-naked-cake-cake4692mang-A_0.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.7,
       reviewCount: 112,
       description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
@@ -110,8 +119,8 @@ const CakeGallery = () => {
     {
       id: 1,
       name: 'Classic Chocolate Cake',
-      price: 25,
-      image: cake,
+      price: 825,
+      image: "https://bkmedia.bakingo.com/regular_cake_1.jpg?tr=w-484,dpr-1.5,q-70",
       rating: 4.5,
       reviewCount: 128,
       description: 'A rich and moist chocolate cake topped with creamy chocolate frosting.'
@@ -119,8 +128,8 @@ const CakeGallery = () => {
     {
       id: 2,
       name: 'Chocolate Truffle Cake',
-      price: 30,
-      image: cake,
+      price: 530,
+      image: "https://bkmedia.bakingo.com/photo_cake_desktop.jpg?tr=w-484,dpr-1.5,q-70",
       rating: 4.8,
       reviewCount: 95,
       description: 'Decadent layers of chocolate cake filled with velvety chocolate truffle.'
@@ -128,8 +137,8 @@ const CakeGallery = () => {
     {
       id: 3,
       name: 'Chocolate Fudge Cake',
-      price: 28,
-      image: cake,
+      price: 328,
+      image: "https://bkmedia.bakingo.com/theme_cake_9.jpg?tr=w-484,dpr-1.5,q-70",
       rating: 4.3,
       reviewCount: 76,
       description: 'Indulgent fudge cake with a gooey chocolate center and rich ganache topping.'
@@ -137,20 +146,29 @@ const CakeGallery = () => {
     {
       id: 4,
       name: 'Chocolate Fudge Cake',
-      price: 28,
-      image: cake,
+      price: 1228,
+      image: "https://bkmedia.bakingo.com/mango-naked-cake-cake4692mang-A_0.jpg?tr=w-320,h-320,dpr-1.5,q-70",
+      rating: 4.7,
+      reviewCount: 112,
+      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
+    },
+    {
+      id: 5,
+      name: 'Chocolate Fudge Cake',
+      price: 1228,
+      image: "https://bkmedia.bakingo.com/gourmet_cake_0.jpg?tr=w-484,dpr-1.5,q-70",
       rating: 4.7,
       reviewCount: 112,
       description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
     }
   ];
   
-  const bestSellers = [
+  const bestSellers =[
     {
       id: 1,
       name: 'Classic Chocolate Cake',
-      price: 25,
-      image: cake,
+      price: 825,
+      image: "https://bkmedia.bakingo.com/black-forest-cake0001chbl-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.5,
       reviewCount: 128,
       description: 'A rich and moist chocolate cake topped with creamy chocolate frosting.'
@@ -158,8 +176,8 @@ const CakeGallery = () => {
     {
       id: 2,
       name: 'Chocolate Truffle Cake',
-      price: 30,
-      image: cake,
+      price: 530,
+      image: "https://bkmedia.bakingo.com/kitkat-chocolate-cake-cake1119choco-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.8,
       reviewCount: 95,
       description: 'Decadent layers of chocolate cake filled with velvety chocolate truffle.'
@@ -167,8 +185,8 @@ const CakeGallery = () => {
     {
       id: 3,
       name: 'Chocolate Fudge Cake',
-      price: 28,
-      image: cake,
+      price: 328,
+      image: "https://bkmedia.bakingo.com/chocolate-chip-cake0008choc-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.3,
       reviewCount: 76,
       description: 'Indulgent fudge cake with a gooey chocolate center and rich ganache topping.'
@@ -176,13 +194,22 @@ const CakeGallery = () => {
     {
       id: 4,
       name: 'Chocolate Fudge Cake',
-      price: 28,
-      image: cake,
+      price: 1228,
+      image: "https://bkmedia.bakingo.com/heart-shaped-red-velvet-cake-cake1095redv-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
+      rating: 4.7,
+      reviewCount: 112,
+      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
+    },
+    {
+      id: 5,
+      name: 'Chocolate Fudge Cake',
+      price: 1228,
+      image: "https://bkmedia.bakingo.com/fantasy-barbie-cake-them2655flav-A.jpg?tr=w-320,h-320,dpr-1.5,q-70",
       rating: 4.7,
       reviewCount: 112,
       description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
     }
-  ];
+  ];;
   
 
   const CakeCard = ({ cake }) => (
@@ -200,23 +227,32 @@ const CakeGallery = () => {
       </div>
       <div className="w-full p-3">
         <div className="flex items-center justify-between mb-1">
-          <p className="text-rose-500 font-medium text-sm">${cake.price}</p>
+          <p className="text-rose-500 font-medium text-sm">₹{cake.price}</p>
           <div className='flex items-center gap-1'>
-            <div className="flex">
+            <div className="hidden lg:flex">
               {renderStars(cake.rating)}
             </div>
+            <div className='block lg:hidden'>
+            <svg
+          className="w-4 h-4 text-yellow-400"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+        </div>
             <span className="text-xs text-gray-600">({cake.reviewCount})</span>
           </div>
         </div>
         <h3 className="font-medium text-sm text-gray-800 group-hover:text-rose-500 transition-colors duration-300 mb-2">
           {cake.name}
         </h3>
-        <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+        <p className="hidden lg:block md:block text-xs text-gray-600 mb-3 line-clamp-2">
           {cake.description}
         </p>
         <div className="flex gap-2">
           <button 
-            className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors duration-300"
+            className="hidden lg:block flex-1 bg-rose-300 hover:bg-rose-400 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors duration-300"
             onClick={(e) => {
               e.stopPropagation();
               // Add to cart logic here
@@ -225,7 +261,7 @@ const CakeGallery = () => {
             Add to Cart
           </button>
           <button 
-            className="flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-2 py-1.5 rounded text-xs font-medium transition-colors duration-300"
+            className="hidden lg:block flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-2 py-1.5 rounded text-xs font-medium transition-colors duration-300"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/cake/${cake.id}`);
