@@ -7,6 +7,7 @@ function Carousel(props) {
   const [settings] = useState({ 
     dots: true,
     infinite: true,
+    arrows: false, // ← Disable the arrows
     slidesToShow: props.show || 3,
     slidesToScroll: 1,
     autoplay: true,
@@ -29,6 +30,7 @@ function Carousel(props) {
       }
     ]
   });
+  
 
   return (
     <>
@@ -50,7 +52,7 @@ function Carousel(props) {
                 />
                 {item.title && (
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <h3 className="text-white text-lg font-semibold">{item.title}</h3>
+                    <h3 className="text-white text-lg font-semibold">{item.title} hello</h3>
                     {item.description && (
                       <p className="text-white/90 text-sm mt-1">{item.description}</p>
                     )}
