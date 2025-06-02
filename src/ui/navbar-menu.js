@@ -35,7 +35,7 @@ export const MenuItem = ({
               <motion.div
                 transition={transition}
                 layoutId="active"
-                className="bg-white dark:bg-black backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-200 dark:border-white/[0.2] shadow-xl">
+                className="bg-white  backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-200 dark:border-white/[0.2] shadow-xl">
                 <motion.div
                   layout
                   className="w-max h-full p-4">
@@ -81,10 +81,10 @@ export const ProductItem = ({
         alt={title}
         className="shrink-0 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-16 h-12 sm:w-[140px] sm:h-[70px] object-cover" />
       <div>
-        <h4 className="text-base sm:text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+        <h4 className="text-base sm:text-lg font-semibold mb-1 text-black">
           {title}
         </h4>
-        <p className="text-gray-600 text-xs sm:text-sm max-w-[7rem] sm:max-w-[10rem] dark:text-gray-300">
+        <p className="text-black text-xs sm:text-sm max-w-[7rem] sm:max-w-[10rem]">
           {description}
         </p>
       </div>
@@ -99,7 +99,7 @@ export const HoveredLink = ({
   return (
     <a
       {...rest}
-      className="text-gray-600 dark:text-gray-300 hover:text-[#e098b0] px-4 py-2 rounded-lg hover:bg-gray-50 transition-all duration-300">
+      className="text-black dark:text-gray-300 hover:text-[#e098b0] px-4 py-2 rounded-lg hover:bg-gray-50 transition-all duration-300">
       {children}
     </a>
   );

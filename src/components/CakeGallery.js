@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import cake from '../assets/cake.jpg';
 import BackDropSection from './BackDropSection';
 
 const CakeGallery = () => {
   const navigate = useNavigate();
+  const trendingScrollRef = useRef(null);
+  const surpriseScrollRef = useRef(null);
+  const bestSellersScrollRef = useRef(null);
 
   // Helper function to render star ratings
   const renderStars = (rating) => {
@@ -66,6 +69,25 @@ const CakeGallery = () => {
 
     return stars;
   };
+
+  const scrollLeft = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({
+        left: -300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollRight = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({
+        left: 300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Sample cake data - replace with your actual data
   const trendingCakes = [
     {
@@ -274,7 +296,7 @@ const CakeGallery = () => {
     </div>
   );
 
-  const CakeSection = ({ title, cakes, backdrop }) => (
+  const CakeSection = ({ title, cakes, backdrop, scrollRef }) => (
     <div className={backdrop ? "mb-8 relative lg:p-6 md:p-2" : "mb-8"}>
       {backdrop && (
         <div className="absolute inset-0 z-0 pointer-events-none">
@@ -283,11 +305,43 @@ const CakeGallery = () => {
           <svg className="absolute bottom-4 right-4 w-12 h-12 opacity-20" fill="#e098b0" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
       )}
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 text-left text-[#1F2937] relative z-10">{title}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-left text-[#1F2937] relative z-10">{title}</h2>
+        <div className="flex gap-2 z-10">
+          <button
+            onClick={() => scrollLeft(scrollRef)}
+            className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+            aria-label="Scroll left"
+          >
+            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={() => scrollRight(scrollRef)}
+            className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+            aria-label="Scroll right"
+          >
+            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
       <div className={backdrop ? "relative z-10" : ""}>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-4">
+        <div 
+          ref={scrollRef}
+          className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x snap-mandatory"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
           {cakes.map(cake => (
-            <CakeCard key={cake.id} cake={cake} />
+            <div key={cake.id} className="flex-none w-[280px] md:w-[320px] snap-start">
+              <CakeCard cake={cake} />
+            </div>
           ))}
         </div>
       </div>
@@ -296,10 +350,10 @@ const CakeGallery = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-amber-50 p-3 lg:p-6">
-      <CakeSection title="Our Trending Cakes" cakes={trendingCakes} />
-      <CakeSection title="Surprise Your Love" cakes={surpriseCakes} backdrop />
+      <CakeSection title="Our Trending Cakes" cakes={trendingCakes} scrollRef={trendingScrollRef} />
+      <CakeSection title="Surprise Your Love" cakes={surpriseCakes} backdrop scrollRef={surpriseScrollRef} />
       <BackDropSection />
-      <CakeSection title="Our Best Sellers" cakes={bestSellers} />
+      <CakeSection title="Our Best Sellers" cakes={bestSellers} scrollRef={bestSellersScrollRef} />
     </div>
   );
 };

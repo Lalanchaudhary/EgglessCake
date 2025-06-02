@@ -13,6 +13,10 @@ import Home from './components/Home'
 import Products from './components/Products'
 import Profile from './pages/Profile'
 import UserProfile from './pages/UserProfile'
+import AboutUs from './pages/AboutUs'
+import ContactUs from './pages/ContactUs'
+import Checkout from './pages/Checkout'
+import OrderSuccess from './pages/OrderSuccess'
 
 const App = () => {
   return (
@@ -29,6 +33,10 @@ const App = () => {
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/user-profile" element={<UserProfile />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/contact-us" element={<ContactUs />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-success" element={<OrderSuccess />} />
             </Routes>
           </main>
           <Footer />

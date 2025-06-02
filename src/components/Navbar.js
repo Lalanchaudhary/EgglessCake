@@ -99,7 +99,7 @@ export function NavbarDemo() {
 
             {/* Profile Icon */}
             <button 
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate('/user-profile')}
               className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors duration-300"
             >
               <svg
@@ -192,8 +192,8 @@ function Navbar({
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/products' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
+    { name: 'About Us', path: '/about-us' },
+    { name: 'Contact Us', path: '/contact-us' },
   ];
 
   return (
@@ -204,7 +204,7 @@ function Navbar({
         className
       )}>
       <Menu setActive={setActive}>
-        <MenuItem setActive={setActive} active={active} item="Services">
+        <MenuItem setActive={setActive} active={active} item="Products">
           <div className="flex flex-col space-y-4 text-sm">
             {menuItems.map((item) => (
               <Link
@@ -218,7 +218,7 @@ function Navbar({
             ))}
           </div>
         </MenuItem>
-        <MenuItem setActive={setActive} active={active} item="Products">
+        <MenuItem setActive={setActive} active={active} item="Cakes">
           <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-10 p-2 md:p-4 w-[90vw] max-w-md md:max-w-2xl">
             <ProductItem
               title="All Cakes"
@@ -240,37 +240,24 @@ function Navbar({
               href="/gift-sets"
               src={logo}
               description="Perfect cake combinations for gifting" />
+              
           </div>
         </MenuItem>
-        <MenuItem setActive={setActive} active={active} item="Pricing">
+        <MenuItem setActive={setActive} active={active} item="Support">
           <div className="flex flex-col space-y-4 text-sm">
             <Link
-              to="/hobby"
+              to="/about-us"
               className="text-gray-600 hover:text-rose-400"
-              onClick={() => setActive('Hobby')}
+              onClick={() => setActive('About Us')}
             >
-              Hobby
+              About Us
             </Link>
             <Link
-              to="/individual"
+              to="/contact-us"
               className="text-gray-600 hover:text-rose-400"
-              onClick={() => setActive('Individual')}
+              onClick={() => setActive('Contact Us')}
             >
-              Individual
-            </Link>
-            <Link
-              to="/team"
-              className="text-gray-600 hover:text-rose-400"
-              onClick={() => setActive('Team')}
-            >
-              Team
-            </Link>
-            <Link
-              to="/enterprise"
-              className="text-gray-600 hover:text-rose-400"
-              onClick={() => setActive('Enterprise')}
-            >
-              Enterprise
+              Contact Us
             </Link>
           </div>
         </MenuItem>

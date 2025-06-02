@@ -5,7 +5,27 @@ import { useNavigate } from 'react-router-dom';
 
 const AllCakes = () => {
   const [activeSection, setActiveSection] = useState('all');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [expandedFilters, setExpandedFilters] = useState({
+    price: true,
+    rating: true,
+    dietary: true,
+    flavor: true,
+    occasion: true
+  });
+  const [filters, setFilters] = useState({
+    priceRange: [0, 2000],
+    rating: 0,
+    dietary: [],
+    flavor: [],
+    occasion: []
+  });
   const navigate = useNavigate();
+
+  // Filter options
+  const dietaryOptions = ['Eggless', 'Vegan', 'Gluten Free', 'Sugar Free'];
+  const flavorOptions = ['Chocolate', 'Vanilla', 'Strawberry', 'Butterscotch', 'Red Velvet', 'Fruit'];
+  const occasionOptions = ['Birthday', 'Anniversary', 'Wedding', 'Graduation', 'Corporate'];
 
   // Sample cake data organized by category
   const cakeCategories = {
@@ -107,6 +127,296 @@ const AllCakes = () => {
     return stars;
   };
 
+  const toggleFilterSection = (section) => {
+    setExpandedFilters(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const handleCheckboxChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: prev[filterType].includes(value)
+        ? prev[filterType].filter(item => item !== value)
+        : [...prev[filterType], value]
+    }));
+  };
+
+  const FilterSidebar = () => (
+    <div className="w-64 bg-white rounded-lg shadow-md p-4 h-fit sticky top-4">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        <button
+          onClick={() => setFilters({
+            priceRange: [0, 2000],
+            rating: 0,
+            dietary: [],
+            flavor: [],
+            occasion: []
+          })}
+          className="text-sm text-rose-500 hover:text-rose-600"
+        >
+          Clear All
+        </button>
+      </div>
+
+      {/* Price Range Filter */}
+      <div className="border-b border-gray-200">
+        <button
+          onClick={() => toggleFilterSection('price')}
+          className="w-full flex justify-between items-center py-3 text-left"
+        >
+          <h4 className="font-medium text-gray-700">Price Range</h4>
+          <svg
+            className={`w-5 h-5 transform transition-transform ${
+              expandedFilters.price ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {expandedFilters.price && (
+          <div className="pb-3">
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={filters.priceRange[0]}
+                onChange={(e) => handleFilterChange('priceRange', [parseInt(e.target.value), filters.priceRange[1]])}
+                className="w-20 px-2 py-1 border rounded text-sm"
+                min="0"
+              />
+              <span className="text-gray-500">to</span>
+              <input
+                type="number"
+                value={filters.priceRange[1]}
+                onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], parseInt(e.target.value)])}
+                className="w-20 px-2 py-1 border rounded text-sm"
+                min="0"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Rating Filter */}
+      <div className="border-b border-gray-200">
+        <button
+          onClick={() => toggleFilterSection('rating')}
+          className="w-full flex justify-between items-center py-3 text-left"
+        >
+          <h4 className="font-medium text-gray-700">Minimum Rating</h4>
+          <svg
+            className={`w-5 h-5 transform transition-transform ${
+              expandedFilters.rating ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {expandedFilters.rating && (
+          <div className="pb-3">
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => handleFilterChange('rating', star)}
+                  className={`p-1 rounded ${
+                    filters.rating >= star ? 'text-yellow-400' : 'text-gray-300'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Dietary Preferences */}
+      <div className="border-b border-gray-200">
+        <button
+          onClick={() => toggleFilterSection('dietary')}
+          className="w-full flex justify-between items-center py-3 text-left"
+        >
+          <h4 className="font-medium text-gray-700">Dietary Preferences</h4>
+          <svg
+            className={`w-5 h-5 transform transition-transform ${
+              expandedFilters.dietary ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {expandedFilters.dietary && (
+          <div className="pb-3 space-y-2">
+            {dietaryOptions.map((option) => (
+              <label key={option} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={filters.dietary.includes(option)}
+                  onChange={() => handleCheckboxChange('dietary', option)}
+                  className="rounded text-rose-500 focus:ring-rose-500"
+                />
+                <span className="text-sm text-gray-600">{option}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Flavors */}
+      <div className="border-b border-gray-200">
+        <button
+          onClick={() => toggleFilterSection('flavor')}
+          className="w-full flex justify-between items-center py-3 text-left"
+        >
+          <h4 className="font-medium text-gray-700">Flavors</h4>
+          <svg
+            className={`w-5 h-5 transform transition-transform ${
+              expandedFilters.flavor ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {expandedFilters.flavor && (
+          <div className="pb-3 space-y-2">
+            {flavorOptions.map((option) => (
+              <label key={option} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={filters.flavor.includes(option)}
+                  onChange={() => handleCheckboxChange('flavor', option)}
+                  className="rounded text-rose-500 focus:ring-rose-500"
+                />
+                <span className="text-sm text-gray-600">{option}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Occasions */}
+      <div className="border-b border-gray-200">
+        <button
+          onClick={() => toggleFilterSection('occasion')}
+          className="w-full flex justify-between items-center py-3 text-left"
+        >
+          <h4 className="font-medium text-gray-700">Occasions</h4>
+          <svg
+            className={`w-5 h-5 transform transition-transform ${
+              expandedFilters.occasion ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {expandedFilters.occasion && (
+          <div className="pb-3 space-y-2">
+            {occasionOptions.map((option) => (
+              <label key={option} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={filters.occasion.includes(option)}
+                  onChange={() => handleCheckboxChange('occasion', option)}
+                  className="rounded text-rose-500 focus:ring-rose-500"
+                />
+                <span className="text-sm text-gray-600">{option}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const CakeCard = ({ cake }) => (
+    <div 
+      className="group bg-white rounded-lg shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+      onClick={() => navigate(`/cake/${cake.id}`)}
+    >
+      <div className="w-full aspect-square relative overflow-hidden p-4 pb-0">
+        <img
+          src={cake.image}
+          alt={cake.name}
+          className="w-full h-full rounded-lg object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+      <div className="w-full p-3">
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-rose-500 font-medium text-sm">₹{cake.price}</p>
+          <div className='flex items-center gap-1'>
+            <div className="hidden lg:flex">
+              {renderStars(cake.rating)}
+            </div>
+            <div className='block lg:hidden'>
+              <svg
+                className="w-4 h-4 text-yellow-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+            <span className="text-xs text-gray-600">({cake.reviewCount})</span>
+          </div>
+        </div>
+        <h3 className="font-medium text-sm text-gray-800 group-hover:text-rose-500 transition-colors duration-300 mb-2">
+          {cake.name}
+        </h3>
+        <p className="hidden lg:block md:block text-xs text-gray-600 mb-3 line-clamp-2">
+          {cake.description}
+        </p>
+        <div className="flex gap-2">
+          <button 
+            className="hidden lg:block flex-1 bg-rose-300 hover:bg-rose-400 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors duration-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Add to cart logic here
+            }}
+          >
+            Add to Cart
+          </button>
+          <button 
+            className="hidden lg:block flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-2 py-1.5 rounded text-xs font-medium transition-colors duration-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/cake/${cake.id}`);
+            }}
+          >
+            Details
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-amber-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -137,128 +447,75 @@ const AllCakes = () => {
           ))}
         </div>
 
-        {/* Cake Sections */}
-        {activeSection === 'all' ? (
-          // Show all categories
-          Object.entries(cakeCategories).map(([category, data]) => (
-            <div key={category} className="mb-16">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                  {data.title}
-                </h2>
-                <p className="text-gray-600">{data.description}</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {data.cakes.map(cake => (
-                  <div 
-                    key={cake.id} 
-                    className="group bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-                    onClick={() => navigate(`/cake/${cake.id}`)}
-                  >
-                    <div className="w-full aspect-square relative overflow-hidden p-4 pb-0">
-                      <img
-                        src={cake.image}
-                        alt={cake.name}
-                        className="w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-                    <div className="w-full p-4">
-                      <div className="flex items-center gap-2 justify-between">
-                      <p className="text-rose-500 font-medium mb-3">${cake.price}</p>
-                      <div className='flex'>
-                        <div className="flex">
-                          {renderStars(cake.rating)}
-                        </div>
-                        <span className="text-sm text-gray-600">({cake.reviewCount})</span>
-                        </div>
-                      </div>
-                      <h3 className="font-semibold text-lg mb-1 text-gray-800 group-hover:text-rose-500 transition-colors duration-300">{cake.name}</h3>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <button 
-                          className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Add to cart logic here
-                          }}
-                        >
-                          Add to Cart
-                        </button>
-                        <button 
-                          className="flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/cake/${cake.id}`);
-                          }}
-                        >
-                          Details
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {/* Mobile Filter Button */}
+        <div className="lg:hidden mb-4">
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="w-full bg-white px-4 py-2 rounded-lg shadow-sm flex items-center justify-between"
+          >
+            <span className="font-medium text-gray-700">Filters</span>
+            <svg
+              className={`w-5 h-5 transform transition-transform ${isFilterOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Main Content with Filters */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Filter Sidebar - Desktop */}
+          <div className="hidden lg:block">
+            <FilterSidebar />
+          </div>
+
+          {/* Filter Sidebar - Mobile */}
+          {isFilterOpen && (
+            <div className="lg:hidden">
+              <FilterSidebar />
             </div>
-          ))
-        ) : (
-          // Show selected category
-          <div className="mb-16">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                {cakeCategories[activeSection].title}
-              </h2>
-              <p className="text-gray-600">{cakeCategories[activeSection].description}</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {cakeCategories[activeSection].cakes.map(cake => (
-                <div 
-                  key={cake.id} 
-                  className="group bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-                  onClick={() => navigate(`/cake/${cake.id}`)}
-                >
-                  <div className="w-full aspect-square relative overflow-hidden">
-                    <img
-                      src={cake.image}
-                      alt={cake.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          )}
+
+          {/* Cake Grid */}
+          <div className="flex-1">
+            {activeSection === 'all' ? (
+              // Show all categories
+              Object.entries(cakeCategories).map(([category, data]) => (
+                <div key={category} className="mb-16">
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                      {data.title}
+                    </h2>
+                    <p className="text-gray-600">{data.description}</p>
                   </div>
-                  <div className="w-full p-4">
-                    <h3 className="font-semibold text-lg mb-1 text-gray-800 group-hover:text-rose-500 transition-colors duration-300">{cake.name}</h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex">
-                        {renderStars(cake.rating)}
-                      </div>
-                      <span className="text-sm text-gray-600">({cake.reviewCount})</span>
-                    </div>
-                    <p className="text-rose-500 font-medium mb-3">${cake.price}</p>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <button 
-                        className="flex-1 bg-rose-300 hover:bg-rose-400 text-white px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Add to cart logic here
-                        }}
-                      >
-                        Add to Cart
-                      </button>
-                      <button 
-                        className="flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/cake/${cake.id}`);
-                        }}
-                      >
-                        Details
-                      </button>
-                    </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 lg:gap-4">
+                    {data.cakes.map(cake => (
+                      <CakeCard key={cake.id} cake={cake} />
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              ))
+            ) : (
+              // Show selected category
+              <div className="mb-16">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                    {cakeCategories[activeSection].title}
+                  </h2>
+                  <p className="text-gray-600">{cakeCategories[activeSection].description}</p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 lg:gap-4">
+                  {cakeCategories[activeSection].cakes.map(cake => (
+                    <CakeCard key={cake.id} cake={cake} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
