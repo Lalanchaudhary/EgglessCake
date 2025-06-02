@@ -307,7 +307,7 @@ const CakeGallery = () => {
       )}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-left text-[#1F2937] relative z-10">{title}</h2>
-        <div className="flex gap-2 z-10">
+        <div className="flex gap-2 z-10 hidden lg:block md:block">
           <button
             onClick={() => scrollLeft(scrollRef)}
             className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"

@@ -46,7 +46,7 @@ const HeroSection = () => {
         </div>
 
         {/* Right Image Placeholder */}
-        <div className="w-full md:w-[800px] max-w-[800px] hidden lg:block md:block">
+        <div className="w-full md:w-[800px] max-w-[800px]">
           <div className="aspect-[4/3] bg-gray-300 rounded-xl flex items-center justify-center text-4xl text-gray-500 shadow-lg">
             <img src={cake} alt="cake" className="w-full h-full object-cover rounded-xl" />
           </div>
