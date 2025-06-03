@@ -28,38 +28,4 @@ exports.auth = async (req, res, next) => {
   }
 };
 
-exports.isStudent = async (req, res, next) => {
-  try {
-    if (req.user.role !== "Student") {
-      res.status(401).json({
-        success: false,
-        role: req.user.role,
-        message: "this is for student stay away",
-      });
-    }
-    next();
-  } catch (e) {
-    res.status(401).json({
-      success: false,
-      message: "internal server error",
-    });
-  }
-};
 
-exports.isAdmin = async (req, res, next) => {
-  try {
-    if (req.user.role !== "Admin") {
-      return res.status(401).json({
-        success: false,
-        role: req.user.role,
-        message: "This is for admins only.",
-      });
-    }
-    next();
-  } catch (e) {
-    res.status(401).json({
-      success: false,
-      message: "internal server error",
-    });
-  }
-};
