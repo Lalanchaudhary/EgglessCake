@@ -17,10 +17,11 @@ import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import Checkout from './pages/Checkout'
 import OrderSuccess from './pages/OrderSuccess'
-
+import { UserProvider } from './context/UserContext'
 const App = () => {
   return (
     <CartProvider>
+      <UserProvider>
       <Router>
         <div className='bg-[#f4eee1] min-h-screen flex flex-col'>
           <NavbarDemo />
@@ -42,6 +43,7 @@ const App = () => {
           <Footer />
         </div>
       </Router>
+      </UserProvider>
     </CartProvider>
   )
 }

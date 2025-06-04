@@ -1,38 +1,37 @@
-const express = require("express")
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+const userController = require('../controller/userController');
+const auth = require('../middleware/auth');
 
+// Auth routes
+router.post('/register', userController.register);
+router.post('/login', userController.login);
 
+// Profile routes
+router.get('/profile', auth, userController.getProfile);
+router.patch('/profile', auth, userController.updateProfile);
 
-const { login, signup } = require("../controller/auth")
+// Address routes
+router.post('/addresses', auth, userController.addAddress);
+router.patch('/addresses/:addressId', auth, userController.updateAddress);
+router.delete('/addresses/:addressId', auth, userController.deleteAddress);
 
-const { auth, isStudent, isAdmin } = require("../middleware/auth")
+// UPI routes
+router.post('/upi', auth, userController.addUPI);
+router.patch('/upi/:upiId', auth, userController.updateUPI);
+router.delete('/upi/:upiId', auth, userController.deleteUPI);
 
-// router.post("/login", login)
-router.post("/signup", signup)
-router.post("/login", login)
+// Wallet routes
+router.post('/wallet/add-money', auth, userController.addMoney);
+router.get('/wallet/transactions', auth, userController.getWalletTransactions);
 
-//protected route
+// Settings routes
+router.patch('/settings', auth, userController.updateSettings);
 
-router.get("/test",auth, (req, res) => {
-    console.log("hello");
-    res.status(200).json({
-        success: true,
-        message: "the user is authentic"
-    })
-})
+// Orders routes
+router.get('/orders', auth, userController.getOrders);
 
-router.get("/student", auth, isStudent, (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "welcome to the protected route for the student"
-    })
-})
+// Membership routes
+router.get('/membership', auth, userController.getMembership);
 
-router.get("/admin", auth, isAdmin, (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "welcome to the protected route for the Admin"
-    })
-})
-
-module.exports = router
+module.exports = router; 

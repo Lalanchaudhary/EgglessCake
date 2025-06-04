@@ -1,74 +1,74 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import MyOrders from '../components/profile/MyOrders';
 // MyOrders Component
-const MyOrders = () => {
-  const orders = [
-    {
-      id: 1,
-      orderNumber: 'ORD-2024-001',
-      date: '2024-03-15',
-      status: 'Delivered',
-      total: 299.99,
-      items: [
-        { name: 'Product 1', quantity: 2, price: 99.99 },
-        { name: 'Product 2', quantity: 1, price: 100.01 },
-      ],
-    },
-    {
-      id: 2,
-      orderNumber: 'ORD-2024-002',
-      date: '2024-03-10',
-      status: 'Processing',
-      total: 149.99,
-      items: [
-        { name: 'Product 3', quantity: 1, price: 149.99 },
-      ],
-    },
-  ];
+// const MyOrders = () => {
+//   const orders = [
+//     {
+//       id: 1,
+//       orderNumber: 'ORD-2024-001',
+//       date: '2024-03-15',
+//       status: 'Delivered',
+//       total: 299.99,
+//       items: [
+//         { name: 'Product 1', quantity: 2, price: 99.99 },
+//         { name: 'Product 2', quantity: 1, price: 100.01 },
+//       ],
+//     },
+//     {
+//       id: 2,
+//       orderNumber: 'ORD-2024-002',
+//       date: '2024-03-10',
+//       status: 'Processing',
+//       total: 149.99,
+//       items: [
+//         { name: 'Product 3', quantity: 1, price: 149.99 },
+//       ],
+//     },
+//   ];
 
-  return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
-      <div className="space-y-6">
-        {orders.map((order) => (
-          <div key={order.id} className="border rounded-lg p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Order #{order.orderNumber}</h3>
-                <p className="text-sm text-gray-500">Placed on {order.date}</p>
-              </div>
-              <div className="mt-2 sm:mt-0">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  order.status === 'Delivered' 
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {order.status}
-                </span>
-              </div>
-            </div>
+//   return (
+//     <div className="bg-white shadow rounded-lg p-6">
+//       <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
+//       <div className="space-y-6">
+//         {orders.map((order) => (
+//           <div key={order.id} className="border rounded-lg p-4">
+//             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+//               <div>
+//                 <h3 className="text-lg font-semibold text-gray-900">Order #{order.orderNumber}</h3>
+//                 <p className="text-sm text-gray-500">Placed on {order.date}</p>
+//               </div>
+//               <div className="mt-2 sm:mt-0">
+//                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+//                   order.status === 'Delivered' 
+//                     ? 'bg-green-100 text-green-800'
+//                     : 'bg-yellow-100 text-yellow-800'
+//                 }`}>
+//                   {order.status}
+//                 </span>
+//               </div>
+//             </div>
             
-            <div className="border-t pt-4">
-              <div className="space-y-2">
-                {order.items.map((item, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span>{item.name} x {item.quantity}</span>
-                    <span>${item.price.toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 pt-4 border-t flex justify-between font-semibold">
-                <span>Total</span>
-                <span>${order.total.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+//             <div className="border-t pt-4">
+//               <div className="space-y-2">
+//                 {order.items.map((item, index) => (
+//                   <div key={index} className="flex justify-between text-sm">
+//                     <span>{item.name} x {item.quantity}</span>
+//                     <span>${item.price.toFixed(2)}</span>
+//                   </div>
+//                 ))}
+//               </div>
+//               <div className="mt-4 pt-4 border-t flex justify-between font-semibold">
+//                 <span>Total</span>
+//                 <span>${order.total.toFixed(2)}</span>
+//               </div>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
 
 // MyWallet Component
 const MyWallet = () => {

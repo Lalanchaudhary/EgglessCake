@@ -1,31 +1,31 @@
 const jwt = require("jsonwebtoken");
+const User = require('../models/User');
 
 require("dotenv").config();
 
-exports.auth = async (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
-    const token =
-      req.body.token ||
-      req.cookies.token ||
-      req.header("Authorization").replace("Bearer ", "");
-
-    try {
-      const decode = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decode;
-    } catch (e) {
-      return res.status(401).json({
-        success: false,
-        message: "token is invalid",
-      });
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
+      throw new Error();
     }
 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ _id: decoded.userId });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    req.token = token;
+    req.user = user;
     next();
-  } catch (e) {
-    return res.status(500).json({
-      success: false,
-      message: "internal server error",
-    });
+  } catch (error) {
+    res.status(401).json({ error: 'Please authenticate' });
   }
 };
+
+module.exports = auth;
 
 
