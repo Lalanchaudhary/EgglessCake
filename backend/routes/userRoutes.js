@@ -4,8 +4,10 @@ const userController = require('../controller/userController');
 const auth = require('../middleware/auth');
 
 // Auth routes
+router.post('/check-phone', userController.checkPhoneNumber);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
+router.post('/login/phone', userController.loginWithPhone);
 
 // Profile routes
 router.get('/profile', auth, userController.getProfile);

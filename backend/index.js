@@ -13,8 +13,10 @@ app.use(express.json());
 const userRoutes = require("./routes/userRoutes");
 const port = process.env.PORT || 4000;
 
-app.use("/", userRoutes);
-
+app.use("/users", userRoutes);
+app.get("/",(req,res)=>{
+res.send("Welcome to eggless")
+})
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

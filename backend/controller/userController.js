@@ -6,22 +6,134 @@ const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
-// Register new user
-exports.register = async (req, res) => {
+// Check if user exists with phone number
+exports.checkPhoneNumber = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { phoneNumber } = req.body;
     
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ phoneNumber });
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' });
+      // If user exists, generate token and return user data
+      const token = generateToken(existingUser._id);
+      return res.status(200).json({
+        message: 'User exists',
+        isExistingUser: true,
+        user: {
+          _id: existingUser._id,
+          name: existingUser.name,
+          email: existingUser.email,
+          phoneNumber: existingUser.phoneNumber,
+          isPhoneVerified: existingUser.isPhoneVerified
+        },
+        token
+      });
     }
 
-    const user = new User({ name, email, password });
+    // If user doesn't exist, return success but indicate new user
+    res.status(200).json({
+      message: 'New user',
+      isExistingUser: false
+    });
+  } catch (error) {
+    console.error('Phone check error:', error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Register new user with phone number
+exports.register = async (req, res) => {
+  try {
+    const { name, email, phoneNumber } = req.body;
+    console.log(req.body);
+    
+    
+    // Check if user already exists with phone number
+    const existingUser = await User.findOne({ phoneNumber });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Phone number already registered' });
+    }
+
+    // Check if user already exists with email
+    if (email) {
+      const existingUserByEmail = await User.findOne({ email });
+      if (existingUserByEmail) {
+        return res.status(400).json({ error: 'Email already registered' });
+      }
+    }
+
+    // Create new user
+    const user = new User({
+      name,
+      email,
+      phoneNumber,
+      isPhoneVerified: true, // Since we're using Firebase phone auth
+      createdAt: new Date(),
+      // wallet: {
+      //   balance: 0,
+      //   transactions: []
+      // },
+      // settings: {
+      //   notifications: {
+      //     email: true,
+      //     sms: true,
+      //     push: true
+      //   },
+      //   privacy: {
+      //     profileVisibility: 'public',
+      //     showPhoneNumber: false
+      //   },
+      //   security: {
+      //     twoFactorAuth: false
+      //   }
+      // }
+    });
+
     await user.save();
 
     const token = generateToken(user._id);
-    res.status(201).json({ user, token });
+    res.status(201).json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        isPhoneVerified: user.isPhoneVerified
+      },
+      token
+    });
   } catch (error) {
+    console.error('Registration error:', error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Login with phone number
+exports.loginWithPhone = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found. Please register first.' });
+    }
+
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    const token = generateToken(user._id);
+    res.json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        isPhoneVerified: user.isPhoneVerified
+      },
+      token
+    });
+  } catch (error) {
+    console.error('Login error:', error);
     res.status(400).json({ error: error.message });
   }
 };

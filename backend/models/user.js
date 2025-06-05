@@ -182,46 +182,66 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
     trim: true,
     lowercase: true
   },
   password: {
     type: String,
-    required: true,
+    required: false,
     minlength: 6
   },
-  phone: {
-    type: String
+  phoneNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  isPhoneVerified: {
+    type: Boolean,
+    default: false
   },
   profilePicture: {
     type: String
   },
   addresses: [addressSchema],
   upiAccounts: [upiAccountSchema],
-  wallet: walletSchema,
+  wallet: {
+    type: walletSchema,
+    default: () => ({})
+  },
   orders: [orderSchema],
-  membership: membershipSchema,
-  settings: settingsSchema,
+  membership: {
+    type: membershipSchema,
+    default: () => ({})
+  },
+  settings: {
+    type: settingsSchema,
+    default: () => ({})
+  },
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  lastLogin: {
+    type: Date
   }
 });
 
-// Hash password before saving
+// Remove password comparison method since we're using phone auth
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) return false;
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Hash password before saving (only if password is provided)
 userSchema.pre('save', async function(next) {
-  if (this.isModified('password')) {
+  if (this.isModified('password') && this.password) {
     this.password = await bcrypt.hash(this.password, 8);
   }
   next();
 });
-
-// Compare password method
-userSchema.methods.comparePassword = async function(password) {
-  return bcrypt.compare(password, this.password);
-};
 
 const User = mongoose.model('User', userSchema);
 

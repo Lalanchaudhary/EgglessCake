@@ -38,17 +38,17 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const login = async (credentials) => {
-    try {
-      const data = await userService.login(credentials);
-      setUser(data.user);
-      setError(null);
-      return data;
-    } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
-      throw err;
-    }
-  };
+  // const login = async (credentials) => {
+  //   try {
+  //     const data = await userService.login(credentials);
+  //     setUser(data.user);
+  //     setError(null);
+  //     return data;
+  //   } catch (err) {
+  //     setError(err.response?.data?.error || 'Login failed');
+  //     throw err;
+  //   }
+  // };
 
   const register = async (userData) => {
     try {
@@ -180,7 +180,7 @@ export const UserProvider = ({ children }) => {
     user,
     loading,
     error,
-    login,
+    // login,
     register,
     logout,
     updateProfile,

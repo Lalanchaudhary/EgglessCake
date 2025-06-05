@@ -1,50 +1,123 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { app } from '../Firebase';
+import { checkPhoneNumber, register } from '../services/userService';
 
 const Profile = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [isExistingUser, setIsExistingUser] = useState(false);
+  const [loading,setLoading]=useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    phoneNumber: '',
+    otp: '',
     name: '',
+    email: '',
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const auth = getAuth(app);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError(''); // Clear error when user types
+    setError('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      // TODO: Replace with actual API call
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, we'll just check if email and password are not empty
-      if (!formData.email || !formData.password) {
-        throw new Error('Please fill in all required fields');
+      if (!formData.phoneNumber || formData.phoneNumber.length < 10) {
+        throw new Error('Please enter a valid phone number');
       }
 
-      // If signup, also check name
-      if (!isLogin && !formData.name) {
-        throw new Error('Please fill in all required fields');
+
+      // Setup reCAPTCHA
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible',
+          callback: (response) => {
+            console.log('reCAPTCHA verified');
+          },
+        });
       }
 
-      // Simulate successful login/signup
-      console.log('Form submitted:', formData);
-      
-      // Redirect to user profile page
-      navigate('/user-profile');
+      const appVerifier = window.recaptchaVerifier;
+      const fullPhone = formData.phoneNumber.startsWith('+')
+        ? formData.phoneNumber
+        : `+91${formData.phoneNumber}`;
+
+      const confirmation = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+      window.confirmationResult = confirmation;
+      setIsOtpSent(true);
+      alert("OTP sent to " + fullPhone);
     } catch (err) {
-      setError(err.message || 'An error occurred. Please try again.');
+      console.error('Error sending OTP:', err);
+      setError(err.message || 'Failed to send OTP. Try again.');
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+  
+    try {
+      if (!formData.otp || formData.otp.length !== 6) {
+        throw new Error('Please enter a valid 6-digit OTP');
+      }
+  
+      // ✅ Step 1: Verify OTP
+      const result = await window.confirmationResult.confirm(formData.otp);
+      console.log("User signed in:", result.user);
+  
+      // ✅ Step 2: Check if user exists
+      const data = await checkPhoneNumber(formData.phoneNumber);
+  
+      if (data.isExistingUser) {
+        setIsExistingUser(true);
+        navigate('/user-profile');
+      } else {
+        setIsOtpVerified(true);
+      }
+    } catch (err) {
+      console.error('Error verifying OTP:', err);
+      setError('Invalid OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  const handleCompleteProfile = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      if (!formData.name.trim()) {
+        throw new Error('Please enter your name');
+      }
+      if (!formData.email || !formData.email.includes('@')) {
+        throw new Error('Please enter a valid email address');
+      }
+
+      const data = await register({
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+      });
+              navigate('/user-profile');
+
+      // User will be automatically redirected after successful registration
+      // as the register service handles token and user storage
+    } catch (err) {
+      console.error('Error completing profile:', err);
+      setError(err.message || 'Failed to complete profile. Please try again.');
     }
   };
 
@@ -52,7 +125,7 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          {isLogin ? 'Sign in to your account' : 'Create your account'}
+          {isOtpVerified ? 'Complete Your Profile' : isOtpSent ? 'Enter OTP' : 'Login with Phone Number'}
         </h2>
       </div>
 
@@ -64,8 +137,58 @@ const Profile = () => {
             </div>
           )}
           
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {!isLogin && (
+          {!isOtpVerified ? (
+            <form className="space-y-6" onSubmit={isOtpSent ? handleVerifyOtp : handleSendOtp}>
+              {!isOtpSent ? (
+                <div>
+                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+                    Phone Number
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      type="tel"
+                      required
+                      placeholder="Enter your phone number"
+                      value={formData.phoneNumber}
+                      onChange={handleChange}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
+                    Enter OTP
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      id="otp"
+                      name="otp"
+                      type="text"
+                      required
+                      maxLength="6"
+                      placeholder="Enter 6-digit OTP"
+                      value={formData.otp}
+                      onChange={handleChange}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#e098b0] hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]"
+                >
+                  {isOtpSent ? !loading?'Verify OTP':'Verifying' : 'Send OTP'}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form className="space-y-6" onSubmit={handleCompleteProfile}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                   Full Name
@@ -76,89 +199,62 @@ const Profile = () => {
                     name="name"
                     type="text"
                     required
+                    placeholder="Enter your full name"
                     value={formData.name}
                     onChange={handleChange}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
                   />
                 </div>
               </div>
-            )}
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
-                />
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email Address
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
-                />
+              <div>
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#e098b0] hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]"
+                >
+                  Complete Profile
+                </button>
               </div>
-            </div>
+            </form>
+          )}
 
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#e098b0] hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]"
-              >
-                {isLogin ? 'Sign in' : 'Sign up'}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  {isLogin ? "Don't have an account?" : "Already have an account?"}
-                </span>
-              </div>
-            </div>
-
+          {isOtpSent && !isOtpVerified && (
             <div className="mt-6">
               <button
                 onClick={() => {
-                  setIsLogin(!isLogin);
+                  setIsOtpSent(false);
                   setError('');
-                  setFormData({ email: '', password: '', name: '' });
+                  setFormData({ ...formData, otp: '' });
                 }}
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]"
               >
-                {isLogin ? 'Create new account' : 'Sign in to existing account'}
+                Change Phone Number
               </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
+      <div id="recaptcha-container"></div>
     </div>
   );
 };
 
-export default Profile; 
+export default Profile;
