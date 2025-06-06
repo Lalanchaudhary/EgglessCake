@@ -28,7 +28,7 @@ export function NavbarDemo() {
     <div className='sticky top-0 z-50 py-2 md:py-3 px-3 md:px-6 border-b  border-gray-200  bg-white shadow-sm backdrop-blur-sm bg-white/95' style={{ height: isMobile ? '60px' : '100px' }}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3 md:space-x-6">
+          <div className="flex items-center space-x-3 md:space-x-6" onClick={()=>{navigate("/")}}>
             <img src={logo} alt='logo' className='h-10 md:h-14 lg:h-20 transition-all duration-300 hover:scale-105' />
           </div>
 

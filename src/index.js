@@ -4,13 +4,19 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ToastContainer } from 'react-toastify';
-
+import { BrowserRouter } from 'react-router-dom';
+import { UserProvider } from './context/UserContext'
+import { CartProvider } from './context/CartContext'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <BrowserRouter>
+      <UserProvider>
+      <CartProvider>
     <App />
     <ToastContainer/>
-  </React.StrictMode>
+    </CartProvider>
+    </UserProvider>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

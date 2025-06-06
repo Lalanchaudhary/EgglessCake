@@ -23,11 +23,22 @@ const addressSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  location: {
+    latitude: {
+      type: Number,
+      required: false  // set to true if you always expect coordinates
+    },
+    longitude: {
+      type: Number,
+      required: false
+    }
+  },
   isDefault: {
     type: Boolean,
     default: false
   }
 });
+
 
 const upiAccountSchema = new mongoose.Schema({
   upiId: {

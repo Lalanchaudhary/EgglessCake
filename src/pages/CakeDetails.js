@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import cake from '../assets/cake.jpg';
 import { useCart } from '../context/CartContext';
 
 const CakeDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const cakeData = location.state?.cake;
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('medium');
   const {addToCart} = useCart();
@@ -39,48 +41,49 @@ const CakeDetails = () => {
   };
 
   // Sample cake data - replace with your actual data
-  const cakeData = {
-    id: 1,
-    name: 'Classic Chocolate Cake',
-    price: 25,
-    image: cake,
-    description: 'A rich and moist chocolate cake made with premium cocoa and the finest ingredients. Perfect for any celebration.',
-    sizes: [
-      { id: 'small', name: 'Small', price: 20, serves: '4-6' },
-      { id: 'medium', name: 'Medium', price: 25, serves: '8-10' },
-      { id: 'large', name: 'Large', price: 35, serves: '12-15' }
-    ],
-    ingredients: [
-      'Premium Cocoa Powder',
-      'Organic Flour',
-      'Fresh Dairy',
-      'Natural Sweeteners',
-      'Pure Vanilla Extract'
-    ],
-    allergens: ['Dairy', 'Gluten'],
-    nutritionInfo: {
-      calories: '350 per slice',
-      protein: '5g',
-      carbs: '45g',
-      fat: '18g'
-    },
-    reviews: [
-      {
-        id: 1,
-        name: 'Sarah Johnson',
-        rating: 5,
-        comment: 'The best chocolate cake I\'ve ever had! Moist and delicious.',
-        date: '2024-02-15'
-      },
-      {
-        id: 2,
-        name: 'Mike Brown',
-        rating: 4,
-        comment: 'Great taste and perfect texture. Will order again!',
-        date: '2024-02-10'
-      }
-    ]
-  };
+  // const cakeData = {
+  //   id: 1,
+  //   name: 'Classic Chocolate Cake',
+  //   price: 25,
+  //   image: cake,
+  //   description: 'A rich and moist chocolate cake made with premium cocoa and the finest ingredients. Perfect for any celebration.',
+  //   sizes: [
+  //     { id: 'small', name: 'Small', price: 20, serves: '4-6' },
+  //     { id: 'medium', name: 'Medium', price: 25, serves: '8-10' },
+  //     { id: 'large', name: 'Large', price: 35, serves: '12-15' }
+  //   ],
+  //   ingredients: [
+  //     'Premium Cocoa Powder',
+  //     'Organic Flour',
+  //     'Fresh Dairy',
+  //     'Natural Sweeteners',
+  //     'Pure Vanilla Extract'
+  //   ],
+  //   allergens: ['Dairy', 'Gluten'],
+  //   nutritionInfo: {
+  //     calories: '350 per slice',
+  //     protein: '5g',
+  //     carbs: '45g',
+  //     fat: '18g'
+  //   },
+  //   reviews: [
+  //     {
+  //       id: 1,
+  //       name: 'Sarah Johnson',
+  //       rating: 5,
+  //       comment: 'The best chocolate cake I\'ve ever had! Moist and delicious.',
+  //       date: '2024-02-15'
+  //     },
+  //     {
+  //       id: 2,
+  //       name: 'Mike Brown',
+  //       rating: 4,
+  //       comment: 'Great taste and perfect texture. Will order again!',
+  //       date: '2024-02-10'
+  //     }
+  //   ]
+  // };
+
 
   // Sample related cakes data
   const relatedCakes = [
@@ -253,7 +256,7 @@ const CakeDetails = () => {
                     >
                       <div className="font-medium">{size.name}</div>
                       <div className="text-sm text-gray-600">Serves {size.serves}</div>
-                      <div className="text-rose-500 font-semibold">${size.price}</div>
+                      <div className="text-rose-500 font-semibold">₹{size.price}</div>
                     </button>
                   ))}
                 </div>

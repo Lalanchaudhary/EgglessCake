@@ -35,6 +35,10 @@ const AddressBook = () => {
     city: '',
     state: '',
     pincode: '',
+    location:{
+      latitude:'',
+      longitude:''
+    },
     isDefault: false
   });
 
@@ -65,6 +69,10 @@ const AddressBook = () => {
       city: '',
       state: '',
       pincode: '',
+      location:{
+        latitude:'',
+        longitude:''
+      },
       isDefault: false
     });
     setError(null);
@@ -168,10 +176,20 @@ const AddressBook = () => {
               try {
                 setLoading(true);
                 const loc = await getCurrentLocation();
+
                 const addr = await reverseGeocode(loc.latitude, loc.longitude);
                 console.log('====================================');
-                console.log(addr);
+                console.log(loc);
                 console.log('====================================');
+                setFormData(prev => ({
+                  ...prev,
+                  location:{
+                    ...prev.location,
+                  latitude: loc.latitude,
+                  longitude: loc.longitude
+                  }
+                }));
+                
                 setFormData((prev) => ({
                   ...prev,
                   ...addr,
@@ -232,15 +250,6 @@ const AddressBook = () => {
               required
             />
 
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Pincode"
-              name="pincode"
-              value={formData.pincode}
-              onChange={handleChange}
-              required
-            />
             <TextField
               fullWidth
               margin="normal"

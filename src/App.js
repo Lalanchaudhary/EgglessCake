@@ -6,7 +6,6 @@ import HeroSection from './components/HeroSection'
 import AllCakes from './pages/AllCakes'
 import CakeDetails from './pages/CakeDetails'
 import Cart from './pages/Cart'
-import { CartProvider } from './context/CartContext'
 import Footer from './components/Footer'
 import Products from './components/Products'
 import Profile from './pages/Profile'
@@ -15,10 +14,13 @@ import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import Checkout from './pages/Checkout'
 import OrderSuccess from './pages/OrderSuccess'
-import { UserProvider } from './context/UserContext'
 import ScrollToTop from './ScrollToTop'
 import { ToastContainer, toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Terms from './pages/Terms';
+import RefundPolicy from './pages/RefundPolicy';
+import ShippingDelivery from './pages/ShippingDelivery';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -40,9 +42,7 @@ const PublicRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <CartProvider>
-      <UserProvider>
-        <Router>
+        <>
           <ScrollToTop />
           <ToastContainer /> 
           <div className='bg-[#f4eee1] min-h-screen flex flex-col'>
@@ -56,6 +56,10 @@ const App = () => {
                 <Route path="/cake/:id" element={<CakeDetails />} />
                 <Route path="/about-us" element={<AboutUs />} />
                 <Route path="/contact-us" element={<ContactUs />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-and-conditions" element={<Terms />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/shipping-delivery" element={<ShippingDelivery />} />
 
                 {/* Auth Routes */}
                 <Route 
@@ -107,9 +111,7 @@ const App = () => {
             </main>
             <Footer />
           </div>
-        </Router>
-      </UserProvider>
-    </CartProvider>
+        </>
   )
 }
 
