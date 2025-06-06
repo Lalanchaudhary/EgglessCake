@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import cake from '../assets/cake.jpg';
 import BackDropSection from './BackDropSection';
 
 const CakeGallery = () => {
@@ -307,10 +306,10 @@ const CakeGallery = () => {
       )}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-left text-[#1F2937] relative z-10">{title}</h2>
-        <div className="flex gap-2 z-10 hidden lg:block md:block">
+        <div className="flex hidden lg:block md:block gap-2 z-10">
           <button
             onClick={() => scrollLeft(scrollRef)}
-            className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+            className="p-2 mr-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
             aria-label="Scroll left"
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -17,6 +17,8 @@ import Checkout from './pages/Checkout'
 import OrderSuccess from './pages/OrderSuccess'
 import { UserProvider } from './context/UserContext'
 import ScrollToTop from './ScrollToTop'
+import { ToastContainer, toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -42,6 +44,7 @@ const App = () => {
       <UserProvider>
         <Router>
           <ScrollToTop />
+          <ToastContainer /> 
           <div className='bg-[#f4eee1] min-h-screen flex flex-col'>
             <NavbarDemo />
             <main className="flex-grow">

@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MyOrders from '../components/profile/MyOrders';
+import AddressBook from '../components/profile/AddressBook';
+import { getProfile ,logout , updateProfile} from '../services/userService';
+import Loading from '../components/Loading';
 // MyOrders Component
 // const MyOrders = () => {
 //   const orders = [
@@ -72,6 +75,8 @@ import MyOrders from '../components/profile/MyOrders';
 
 // MyWallet Component
 const MyWallet = () => {
+
+  
   const walletData = {
     balance: 1250.75,
     transactions: [
@@ -120,76 +125,76 @@ const MyWallet = () => {
 };
 
 // AddressBook Component
-const AddressBook = () => {
-  const addresses = [
-    {
-      id: 1,
-      type: 'Home',
-      name: 'John Doe',
-      address: '123 Main St, Apartment 4B',
-      city: 'New York',
-      state: 'NY',
-      zip: '10001',
-      phone: '+1 234-567-8900',
-      isDefault: true,
-    },
-    {
-      id: 2,
-      type: 'Office',
-      name: 'John Doe',
-      address: '456 Business Ave, Suite 100',
-      city: 'New York',
-      state: 'NY',
-      zip: '10002',
-      phone: '+1 234-567-8901',
-      isDefault: false,
-    },
-  ];
+// const AddressBook = () => {
+//   const addresses = [
+//     {
+//       id: 1,
+//       type: 'Home',
+//       name: 'John Doe',
+//       address: '123 Main St, Apartment 4B',
+//       city: 'New York',
+//       state: 'NY',
+//       zip: '10001',
+//       phone: '+1 234-567-8900',
+//       isDefault: true,
+//     },
+//     {
+//       id: 2,
+//       type: 'Office',
+//       name: 'John Doe',
+//       address: '456 Business Ave, Suite 100',
+//       city: 'New York',
+//       state: 'NY',
+//       zip: '10002',
+//       phone: '+1 234-567-8901',
+//       isDefault: false,
+//     },
+//   ];
 
-  return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Address Book</h2>
-        <button className="px-4 py-2 bg-[#e098b0] text-white rounded-md hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]">
-          Add New Address
-        </button>
-      </div>
+//   return (
+//     <div className="bg-white shadow rounded-lg p-6">
+//       <div className="flex justify-between items-center mb-6">
+//         <h2 className="text-2xl font-bold text-gray-900">Address Book</h2>
+//         <button className="px-4 py-2 bg-[#e098b0] text-white rounded-md hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]">
+//           Add New Address
+//         </button>
+//       </div>
 
-      <div className="space-y-4">
-        {addresses.map((address) => (
-          <div key={address.id} className="border rounded-lg p-4">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{address.type}</h3>
-                  {address.isDefault && (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                      Default
-                    </span>
-                  )}
-                </div>
-                <p className="text-gray-600">{address.name}</p>
-              </div>
-              <div className="flex space-x-2">
-                <button className="text-gray-600 hover:text-[#e098b0]">
-                  Edit
-                </button>
-                <button className="text-red-600 hover:text-red-700">
-                  Delete
-                </button>
-              </div>
-            </div>
-            <div className="text-gray-600">
-              <p>{address.address}</p>
-              <p>{address.city}, {address.state} {address.zip}</p>
-              <p>{address.phone}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+//       <div className="space-y-4">
+//         {addresses.map((address) => (
+//           <div key={address.id} className="border rounded-lg p-4">
+//             <div className="flex justify-between items-start mb-4">
+//               <div>
+//                 <div className="flex items-center space-x-2">
+//                   <h3 className="text-lg font-semibold text-gray-900">{address.type}</h3>
+//                   {address.isDefault && (
+//                     <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+//                       Default
+//                     </span>
+//                   )}
+//                 </div>
+//                 <p className="text-gray-600">{address.name}</p>
+//               </div>
+//               <div className="flex space-x-2">
+//                 <button className="text-gray-600 hover:text-[#e098b0]">
+//                   Edit
+//                 </button>
+//                 <button className="text-red-600 hover:text-red-700">
+//                   Delete
+//                 </button>
+//               </div>
+//             </div>
+//             <div className="text-gray-600">
+//               <p>{address.address}</p>
+//               <p>{address.city}, {address.state} {address.zip}</p>
+//               <p>{address.phone}</p>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
 
 // ManageSavedUPI Component
 const ManageSavedUPI = () => {
@@ -393,19 +398,31 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [activeComponent, setActiveComponent] = useState('profile');
-  const [userData, setUserData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1234567890',
-    address: '123 Main St, City, Country',
-  });
+  const [userData, setUserData] = useState(getProfile());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const profile = await getProfile(); // Wait for resolved data
+        console.log(profile.name);
+        setUserData(profile);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const menuItems = [
-    { id: 1, title: 'My Orders', icon: '📦', component: 'orders' },
-    { id: 2, title: 'My Wallet', icon: '💰', component: 'wallet' },
-    { id: 3, title: 'Address Book', icon: '📚', component: 'address' },
-    { id: 4, title: 'Manage Saved UPI', icon: '💳', component: 'upi' },
-    { id: 5, title: 'My Profile', icon: '👤', component: 'profile' },
+    { id: 1, title: 'My Profile', icon: '👤', component: 'profile' },
+    { id: 2, title: 'My Orders', icon: '📦', component: 'orders' },
+    { id: 3, title: 'My Wallet', icon: '💰', component: 'wallet' },
+    { id: 4, title: 'Address Book', icon: '📚', component: 'address' },
+    { id: 5, title: 'Manage Saved UPI', icon: '💳', component: 'upi' },
     { id: 6, title: 'My Account', icon: '🔑', component: 'account' },
     { id: 7, title: 'Account Settings', icon: '⚙️', component: 'settings' },
   ];
@@ -415,11 +432,18 @@ const UserProfile = () => {
   };
 
   const handleSave = () => {
+    updateProfile({
+      name:userData.name,
+      email:userData.email,
+      phoneNumber:userData.phoneNumber,
+      profilePicture:""
+    });
     setIsEditing(false);
   };
 
   const handleLogout = () => {
-    navigate('/profile');
+    logout();
+    navigate('/login');
   };
 
   const renderComponent = () => {
@@ -439,6 +463,7 @@ const UserProfile = () => {
       case 'profile':
       default:
         return (
+          loading?<Loading/>:
           <div className="bg-white shadow rounded-lg">
             {/* Profile Header */}
             <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
@@ -535,12 +560,12 @@ const UserProfile = () => {
                     {isEditing ? (
                       <input
                         type="tel"
-                        value={userData.phone}
-                        onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
+                        value={userData.phoneNumber}
+                        onChange={(e) => setUserData({ ...userData, phoneNumber: e.target.value })}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
                       />
                     ) : (
-                      <p className="mt-1 text-sm text-gray-900">{userData.phone}</p>
+                      <p className="mt-1 text-sm text-gray-900">{userData.phoneNumber}</p>
                     )}
                   </div>
 
@@ -554,7 +579,7 @@ const UserProfile = () => {
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#e098b0] focus:border-[#e098b0] sm:text-sm"
                       />
                     ) : (
-                      <p className="mt-1 text-sm text-gray-900">{userData.address}</p>
+                      <p className="mt-1 text-sm text-gray-900">{userData.addresses[0].street}</p>
                     )}
                   </div>
                 </div>

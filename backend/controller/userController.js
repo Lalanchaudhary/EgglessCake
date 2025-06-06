@@ -162,6 +162,7 @@ exports.login = async (req, res) => {
 
 // Get user profile
 exports.getProfile = async (req, res) => {
+  
   try {
     const user = await User.findById(req.user._id).select('-password');
     res.json(user);
@@ -173,7 +174,9 @@ exports.getProfile = async (req, res) => {
 // Update user profile
 exports.updateProfile = async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ['name', 'email', 'phone', 'profilePicture'];
+  console.log(req.body);
+  
+  const allowedUpdates = ['name', 'email', 'phoneNumber', 'profilePicture'];
   const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
   if (!isValidOperation) {

@@ -59,6 +59,8 @@ export const getProfile = async () => {
 };
 
 export const updateProfile = async (profileData) => {
+  console.log(profileData);
+  
   const response = await api.patch('/users/profile', profileData);
   // Update local storage if user data is returned
   if (response.data.user) {

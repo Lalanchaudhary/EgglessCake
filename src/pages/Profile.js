@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { app } from '../Firebase';
 import { checkPhoneNumber, register } from '../services/userService';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Profile = () => {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
@@ -55,7 +56,19 @@ const Profile = () => {
       const confirmation = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
       window.confirmationResult = confirmation;
       setIsOtpSent(true);
-      alert("OTP sent to " + fullPhone);
+      toast.success(`Otp sent to ${fullPhone}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      
+      
+      // alert("OTP sent to " + fullPhone);
     } catch (err) {
       console.error('Error sending OTP:', err);
       setError(err.message || 'Failed to send OTP. Try again.');
@@ -122,6 +135,8 @@ const Profile = () => {
   };
 
   return (
+    <>
+    <ToastContainer/>
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -183,7 +198,7 @@ const Profile = () => {
                   type="submit"
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#e098b0] hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]"
                 >
-                  {isOtpSent ? !loading?'Verify OTP':'Verifying' : 'Send OTP'}
+                  {isOtpSent ? !loading?'Verify OTP':'Verifying...' : 'Send OTP'}
                 </button>
               </div>
             </form>
@@ -254,6 +269,7 @@ const Profile = () => {
       </div>
       <div id="recaptcha-container"></div>
     </div>
+    </>
   );
 };
 
