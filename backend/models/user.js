@@ -83,49 +83,6 @@ const walletSchema = new mongoose.Schema({
   transactions: [transactionSchema]
 });
 
-const orderSchema = new mongoose.Schema({
-  orderId: {
-    type: String,
-    required: true
-  },
-  items: [{
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
-      required: true
-    },
-    quantity: {
-      type: Number,
-      required: true
-    },
-    price: {
-      type: Number,
-      required: true
-    }
-  }],
-  totalAmount: {
-    type: Number,
-    required: true
-  },
-  status: {
-    type: String,
-    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-    default: 'Pending'
-  },
-  paymentMethod: {
-    type: String,
-    required: true
-  },
-  shippingAddress: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Address'
-  },
-  orderDate: {
-    type: Date,
-    default: Date.now
-  }
-});
-
 const membershipSchema = new mongoose.Schema({
   type: {
     type: String,
@@ -222,7 +179,10 @@ const userSchema = new mongoose.Schema({
     type: walletSchema,
     default: () => ({})
   },
-  orders: [orderSchema],
+  orders: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order'
+  }],
   membership: {
     type: membershipSchema,
     default: () => ({})
@@ -253,6 +213,32 @@ userSchema.pre('save', async function(next) {
   }
   next();
 });
+
+// Add method to get user's orders with pagination
+userSchema.methods.getOrders = async function(page = 1, limit = 10) {
+  const skip = (page - 1) * limit;
+  return mongoose.model('Order').find({ user: this._id })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate('items.product');
+};
+
+// Add method to get user's wallet balance
+userSchema.methods.getWalletBalance = function() {
+  return this.wallet.balance;
+};
+
+// Add method to update wallet balance
+userSchema.methods.updateWalletBalance = async function(amount, type, description) {
+  this.wallet.balance += type === 'Credit' ? amount : -amount;
+  this.wallet.transactions.push({
+    type,
+    amount,
+    description
+  });
+  return this.save();
+};
 
 const User = mongoose.model('User', userSchema);
 

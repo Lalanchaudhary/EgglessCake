@@ -1,53 +1,106 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-
+import { useUser } from '../context/UserContext';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  IconButton,
+  Alert,
+  CircularProgress,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+} from '@mui/material';
+import ShipAddr from '../components/checkout/ShipAddr';
+import Payment from '../components/checkout/Payment';
 const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems } = useCart();
+  const { user} = useUser();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // Shipping Information
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
+  const [selectedAddress, setSelectedAddress1] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // Address form data
+  const [addressFormData, setAddressFormData] = useState({
+    type: 'Home',
+    street: '',
     city: '',
     state: '',
-    zipCode: '',
-    // Payment Information
+    pincode: '',
+    location: {
+      latitude: '',
+      longitude: ''
+    },
+    isDefault: false
+  });
+
+  // Payment form data
+  const [paymentFormData, setPaymentFormData] = useState({
     cardName: '',
     cardNumber: '',
     expiryDate: '',
-    cvv: '',
+    cvv: ''
   });
+
+  useEffect(() => {
+    // Set default address if available
+    if (user?.addresses?.length > 0) {
+      const defaultAddress = user.addresses.find(addr => addr.isDefault);
+      setSelectedAddress1(defaultAddress || user.addresses[0]);
+    }
+
+    // Load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [user?.addresses]);
 
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   const shipping = 5.99;
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleOrderSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Order submitted:', { formData, cartItems, total });
-    // Redirect to success page or show success message
-    navigate('/order-success');
+    if (!selectedAddress) {
+      setError('Please select a shipping address');
+      return;
+    }
+
+    // await handlePayment();
   };
 
   const nextStep = () => {
+    if (currentStep === 1 && !selectedAddress) {
+      setError('Please select a shipping address');
+      return;
+    }
+    setError(null);
     setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
+    setError(null);
     setCurrentStep(currentStep - 1);
   };
 
@@ -55,196 +108,62 @@ const Checkout = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                <input
-                  type="text"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-                <input
-                  type="text"
-                  name="zipCode"
-                  value={formData.zipCode}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-            </div>
-          </div>
+          <ShipAddr setSelectedAddress1={setSelectedAddress1}/>
         );
       case 2:
         return (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Payment Information</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name on Card</label>
-                <input
-                  type="text"
-                  name="cardName"
-                  value={formData.cardName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                <input
-                  type="text"
-                  name="cardNumber"
-                  value={formData.cardNumber}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                  <input
-                    type="text"
-                    name="expiryDate"
-                    placeholder="MM/YY"
-                    value={formData.expiryDate}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                  <input
-                    type="text"
-                    name="cvv"
-                    value={formData.cvv}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <Payment selectedAddress={selectedAddress}/>
         );
       case 3:
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold mb-4">Order Review</h2>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium mb-2">Shipping Information</h3>
-              <p className="text-gray-600">
-                {formData.firstName} {formData.lastName}<br />
-                {formData.address}<br />
-                {formData.city}, {formData.state} {formData.zipCode}<br />
-                {formData.email}<br />
-                {formData.phone}
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium mb-2">Order Summary</h3>
-              {cartItems.map(item => (
-                <div key={item.id} className="flex justify-between py-2">
-                  <span>{item.name} x {item.quantity}</span>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
-              <div className="border-t mt-2 pt-2">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>${shipping.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-semibold mt-2">
-                  <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
+            {error && (
+              <Alert severity="error" className="mb-4">
+                {error}
+              </Alert>
+            )}
+            <Card sx={{ mb: 2 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>Shipping Information</Typography>
+                <Typography>
+                  {user?.name}<br />
+                  {selectedAddress?.street}<br />
+                  {selectedAddress?.city}, {selectedAddress?.state} {selectedAddress?.pincode}<br />
+                  {user?.email}<br />
+                  {user?.phone}
+                </Typography>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>Order Summary</Typography>
+                {cartItems.map(item => (
+                  <Box key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+                    <Typography>{item.name} x {item.quantity}</Typography>
+                    <Typography>${(item.price * item.quantity).toFixed(2)}</Typography>
+                  </Box>
+                ))}
+                <Box sx={{ borderTop: 1, borderColor: 'divider', mt: 2, pt: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography>Subtotal</Typography>
+                    <Typography>${subtotal.toFixed(2)}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography>Shipping</Typography>
+                    <Typography>${shipping.toFixed(2)}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography>Tax</Typography>
+                    <Typography>${tax.toFixed(2)}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, fontWeight: 'bold' }}>
+                    <Typography variant="subtitle1">Total</Typography>
+                    <Typography variant="subtitle1">${total.toFixed(2)}</Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           </div>
         );
       default:
@@ -282,35 +201,38 @@ const Checkout = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
+        <form onSubmit={handleOrderSubmit} className="bg-white rounded-lg shadow-md p-6">
           {renderStep()}
           
           {/* Navigation Buttons */}
           <div className="mt-8 flex justify-between">
             {currentStep > 1 && (
-              <button
-                type="button"
+              <Button
+                variant="outlined"
                 onClick={prevStep}
-                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                disabled={loading}
               >
                 Back
-              </button>
+              </Button>
             )}
             {currentStep < 3 ? (
-              <button
-                type="button"
+              <Button
+                variant="contained"
                 onClick={nextStep}
-                className="ml-auto px-6 py-2 bg-rose-500 text-white rounded-md hover:bg-rose-600"
+                disabled={loading || (currentStep === 1 && !selectedAddress)}
+                sx={{ ml: 'auto', bgcolor: '#272361', '&:hover': { bgcolor: '#272361' } }}
               >
                 Next
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 type="submit"
-                className="ml-auto px-6 py-2 bg-rose-500 text-white rounded-md hover:bg-rose-600"
+                variant="contained"
+                disabled={loading}
+                sx={{ ml: 'auto', bgcolor: '#e098b0', '&:hover': { bgcolor: '#d88aa2' } }}
               >
-                Place Order
-              </button>
+                {loading ? <CircularProgress size={24} /> : 'Place Order'}
+              </Button>
             )}
           </div>
         </form>

@@ -11,9 +11,11 @@ app.use(cokkieParser());
 
 app.use(express.json());
 const userRoutes = require("./routes/userRoutes");
+const paymentRoutes=require("./routes/paymentRoutes")
 const port = process.env.PORT || 4000;
 
 app.use("/users", userRoutes);
+app.use("/payment",paymentRoutes);
 app.get("/",(req,res)=>{
 res.send("Welcome to eggless")
 })
