@@ -47,10 +47,10 @@ export const loginWithPhone = async (phoneNumber) => {
 };
 
 export const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
   localStorage.removeItem('_grecaptcha');
   localStorage.removeItem('cartItems');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
 };
 
 // Profile services
