@@ -4,125 +4,57 @@ import MyOrders from '../components/profile/MyOrders';
 import AddressBook from '../components/profile/AddressBook';
 import { getProfile ,logout , updateProfile} from '../services/userService';
 import Loading from '../components/Loading';
-// MyOrders Component
-// const MyOrders = () => {
-//   const orders = [
-//     {
-//       id: 1,
-//       orderNumber: 'ORD-2024-001',
-//       date: '2024-03-15',
-//       status: 'Delivered',
-//       total: 299.99,
-//       items: [
-//         { name: 'Product 1', quantity: 2, price: 99.99 },
-//         { name: 'Product 2', quantity: 1, price: 100.01 },
-//       ],
-//     },
-//     {
-//       id: 2,
-//       orderNumber: 'ORD-2024-002',
-//       date: '2024-03-10',
-//       status: 'Processing',
-//       total: 149.99,
-//       items: [
-//         { name: 'Product 3', quantity: 1, price: 149.99 },
-//       ],
-//     },
-//   ];
-
-//   return (
-//     <div className="bg-white shadow rounded-lg p-6">
-//       <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
-//       <div className="space-y-6">
-//         {orders.map((order) => (
-//           <div key={order.id} className="border rounded-lg p-4">
-//             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-//               <div>
-//                 <h3 className="text-lg font-semibold text-gray-900">Order #{order.orderNumber}</h3>
-//                 <p className="text-sm text-gray-500">Placed on {order.date}</p>
-//               </div>
-//               <div className="mt-2 sm:mt-0">
-//                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-//                   order.status === 'Delivered' 
-//                     ? 'bg-green-100 text-green-800'
-//                     : 'bg-yellow-100 text-yellow-800'
-//                 }`}>
-//                   {order.status}
-//                 </span>
-//               </div>
-//             </div>
-            
-//             <div className="border-t pt-4">
-//               <div className="space-y-2">
-//                 {order.items.map((item, index) => (
-//                   <div key={index} className="flex justify-between text-sm">
-//                     <span>{item.name} x {item.quantity}</span>
-//                     <span>${item.price.toFixed(2)}</span>
-//                   </div>
-//                 ))}
-//               </div>
-//               <div className="mt-4 pt-4 border-t flex justify-between font-semibold">
-//                 <span>Total</span>
-//                 <span>${order.total.toFixed(2)}</span>
-//               </div>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
+import MyWallet from '../components/profile/MyWallet';
 // MyWallet Component
-const MyWallet = () => {
+// const MyWallet = () => {
 
   
-  const walletData = {
-    balance: 1250.75,
-    transactions: [
-      { id: 1, type: 'Credit', amount: 500, date: '2024-03-15', description: 'Added to wallet' },
-      { id: 2, type: 'Debit', amount: -299.99, date: '2024-03-10', description: 'Order #ORD-2024-002' },
-      { id: 3, type: 'Credit', amount: 1000, date: '2024-03-01', description: 'Added to wallet' },
-    ],
-  };
+//   const walletData = {
+//     balance: 1250.75,
+//     transactions: [
+//       { id: 1, type: 'Credit', amount: 500, date: '2024-03-15', description: 'Added to wallet' },
+//       { id: 2, type: 'Debit', amount: -299.99, date: '2024-03-10', description: 'Order #ORD-2024-002' },
+//       { id: 3, type: 'Credit', amount: 1000, date: '2024-03-01', description: 'Added to wallet' },
+//     ],
+//   };
 
-  return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">My Wallet</h2>
+//   return (
+    // <div className="bg-white shadow rounded-lg p-6">
+    //   <h2 className="text-2xl font-bold text-gray-900 mb-6">My Wallet</h2>
       
-      {/* Balance Card */}
-      <div className="bg-gradient-to-r from-[#e098b0] to-[#d88aa2] rounded-lg p-6 text-white mb-6">
-        <h3 className="text-lg font-medium mb-2">Available Balance</h3>
-        <p className="text-3xl font-bold">${walletData.balance.toFixed(2)}</p>
-      </div>
+    //   {/* Balance Card */}
+    //   <div className="bg-gradient-to-r from-[#e098b0] to-[#d88aa2] rounded-lg p-6 text-white mb-6">
+    //     <h3 className="text-lg font-medium mb-2">Available Balance</h3>
+    //     <p className="text-3xl font-bold">₹{user?.wallet?.balance || 0}</p>
+    //   </div>
 
-      {/* Add Money Button */}
-      <button className="w-full mb-6 px-4 py-2 bg-[#e098b0] text-white rounded-md hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]">
-        Add Money
-      </button>
+    //   {/* Add Money Button */}
+    //   <button className="w-full mb-6 px-4 py-2 bg-[#e098b0] text-white rounded-md hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]" onClick={handleOpen}>
+    //     Add Money
+    //   </button>
 
-      {/* Transaction History */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction History</h3>
-        <div className="space-y-4">
-          {walletData.transactions.map((transaction) => (
-            <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <p className="font-medium text-gray-900">{transaction.description}</p>
-                <p className="text-sm text-gray-500">{transaction.date}</p>
-              </div>
-              <span className={`font-semibold ${
-                transaction.type === 'Credit' ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {transaction.type === 'Credit' ? '+' : ''}{transaction.amount.toFixed(2)}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
+    //   {/* Transaction History */}
+    //   <div>
+    //     <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction History</h3>
+    //     <div className="space-y-4">
+    //       {transactions.map((transaction) => (
+    //         <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
+    //           <div>
+    //             <p className="font-medium text-gray-900">{transaction.description}</p>
+    //             <p className="text-sm text-gray-500">{transaction.date}</p>
+    //           </div>
+    //           <span className={`font-semibold ${
+    //             transaction.type === 'Credit' ? 'text-green-600' : 'text-red-600'
+    //           }`}>
+    //             {transaction.type === 'Credit' ? '+' : ''}{transaction.amount.toFixed(2)}
+    //           </span>
+    //         </div>
+    //       ))}
+    //     </div>
+    //   </div>
+    // </div>
+//   );
+// };
 
 // AddressBook Component
 // const AddressBook = () => {

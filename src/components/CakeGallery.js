@@ -1,12 +1,38 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackDropSection from './BackDropSection';
-
+import { getAllCakes } from '../services/cakeServices';
 const CakeGallery = () => {
   const navigate = useNavigate();
   const trendingScrollRef = useRef(null);
   const surpriseScrollRef = useRef(null);
   const bestSellersScrollRef = useRef(null);
+  const [cakes, setCakes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCakes = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllCakes();
+        setCakes(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching cakes:', err);
+        setError('Failed to fetch cakes. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCakes();
+  }, []);
+
+  // Filter cakes for different sections
+  const trendingCakes = cakes.filter(cake => cake.label === 'Trending Cake');
+  const surpriseCakes = cakes.filter(cake => cake.label === 'Surprise Cake');
+  const bestSellers = cakes.filter(cake => cake.label === 'Best Seller');
 
   // Helper function to render star ratings
   const renderStars = (rating) => {
@@ -87,436 +113,13 @@ const CakeGallery = () => {
     }
   };
 
-  // Sample cake data - replace with your actual data
-  // const trendingCakes = [
-  //   {
-  //     id: 1,
-  //     name: 'Classic Chocolate Cake',
-  //     price: 825,
-  //     image: "https://bkmedia.bakingo.com/choco-truffle-cake0005choc-a.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-  //     rating: 4.5,
-  //     reviewCount: 128,
-  //     description: 'A rich and moist chocolate cake topped with creamy chocolate frosting.'
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Chocolate Truffle Cake',
-  //     price: 530,
-  //     image: "https://bkmedia.bakingo.com/mango-naked-cake-cake4692mang-A_0.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-  //     rating: 4.8,
-  //     reviewCount: 95,
-  //     description: 'Decadent layers of chocolate cake filled with velvety chocolate truffle.'
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Chocolate Fudge Cake',
-  //     price: 328,
-  //     image: "https://bkmedia.bakingo.com/choco-vanilla-cake0006chva-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-  //     rating: 4.3,
-  //     reviewCount: 76,
-  //     description: 'Indulgent fudge cake with a gooey chocolate center and rich ganache topping.'
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'Chocolate Fudge Cake',
-  //     price: 1228,
-  //     image: "https://bkmedia.bakingo.com/fresh-fruit-cake0014frui-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-  //     rating: 4.7,
-  //     reviewCount: 112,
-  //     description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'Chocolate Fudge Cake',
-  //     price: 1228,
-  //     image: "https://bkmedia.bakingo.com/mango-naked-cake-cake4692mang-A_0.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      // rating: 4.7,
-      // reviewCount: 112,
-  //     description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
-  //   }
-  // ];
-
-  const trendingCakes = [
-    {
-      id: 1,
-      name: 'Classic Chocolate Cake',
-      flavour: 'Chocolate',
-      label: 'Trending Cake',
-      price: 825,
-      rating: 4.7,
-      reviewCount: 112,
-      image: "https://bkmedia.bakingo.com/choco-truffle-cake0005choc-a.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      description: 'A rich and moist chocolate cake topped with creamy chocolate frosting.',
-      sizes: [
-        { id: 'small', name: 'Small', price: 799, serves: '4-6' },
-        { id: 'medium', name: 'Medium', price: 825, serves: '8-10' },
-        { id: 'large', name: 'Large', price: 999, serves: '12-15' }
-      ],
-      ingredients: [
-        'Premium Cocoa Powder',
-        'Organic Flour',
-        'Fresh Dairy',
-        'Natural Sweeteners',
-        'Pure Vanilla Extract'
-      ],
-      allergens: ['Dairy', 'Gluten'],
-      nutritionInfo: {
-        calories: '350 per slice',
-        protein: '5g',
-        carbs: '45g',
-        fat: '18g'
-      },
-      reviews: [
-        {
-          id: 1,
-          name: 'Sarah Johnson',
-          rating: 5,
-          comment: 'Absolutely loved it! Perfect for my son’s birthday.',
-          date: '2024-02-15'
-        },
-        {
-          id: 2,
-          name: 'Mike Brown',
-          rating: 4,
-          comment: 'Tasty and soft. Could use a little more cocoa.',
-          date: '2024-02-10'
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Chocolate Truffle Cake',
-      flavour: 'Chocolate',
-      label: 'Surprise Cake',
-      price: 530,
-      rating: 4.7,
-      reviewCount: 112,
-      image: "https://bkmedia.bakingo.com/photo_cake_desktop.jpg?tr=w-484,dpr-1.5,q-70",
-      description: 'Decadent layers of chocolate cake filled with velvety chocolate truffle.',
-      sizes: [
-        { id: 'small', name: 'Small', price: 499, serves: '4' },
-        { id: 'medium', name: 'Medium', price: 530, serves: '8' },
-        { id: 'large', name: 'Large', price: 620, serves: '12' }
-      ],
-      ingredients: [
-        'Dark Chocolate Ganache',
-        'All-purpose Flour',
-        'Whipping Cream',
-        'Eggs',
-        'Butter'
-      ],
-      allergens: ['Eggs', 'Dairy'],
-      nutritionInfo: {
-        calories: '390 per slice',
-        protein: '6g',
-        carbs: '48g',
-        fat: '20g'
-      },
-      reviews: [
-        {
-          id: 1,
-          name: 'Emma Watson',
-          rating: 5,
-          comment: 'Velvety smooth and rich in taste.',
-          date: '2024-03-05'
-        },
-        {
-          id: 2,
-          name: 'John Doe',
-          rating: 4,
-          comment: 'Very creamy and balanced chocolate flavor.',
-          date: '2024-03-01'
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Chocolate Fudge Cake',
-      flavour: 'Chocolate',
-      label: 'Best Seller',
-      price: 1228,
-      rating: 4.7,
-      reviewCount: 112,
-      image: "https://bkmedia.bakingo.com/heart-shaped-red-velvet-cake-cake1095redv-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.',
-      sizes: [
-        { id: 'small', name: 'Small', price: 999, serves: '5' },
-        { id: 'medium', name: 'Medium', price: 1228, serves: '10' },
-        { id: 'large', name: 'Large', price: 1399, serves: '14' }
-      ],
-      ingredients: [
-        'Cocoa Fudge Syrup',
-        'Maida',
-        'Sweetened Condensed Milk',
-        'Butter',
-        'Milk'
-      ],
-      allergens: ['Dairy', 'Gluten'],
-      nutritionInfo: {
-        calories: '420 per slice',
-        protein: '4g',
-        carbs: '55g',
-        fat: '22g'
-      },
-      reviews: [
-        {
-          id: 1,
-          name: 'Priya Mehta',
-          rating: 5,
-          comment: 'Best fudge cake ever. Perfect sweetness.',
-          date: '2024-04-10'
-        },
-        {
-          id: 2,
-          name: 'Ankit Sharma',
-          rating: 4,
-          comment: 'Great fudge, slightly heavy.',
-          date: '2024-04-07'
-        }
-      ]
-    },
-    {
-      id: 4,
-      name: 'Chocolate Fudge Cake',
-      flavour: 'Chocolate',
-      label: 'Trending Cake',
-      price: 328,
-      rating: 4.7,
-      reviewCount: 112,
-      image: "https://bkmedia.bakingo.com/choco-vanilla-cake0006chva-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      description: 'Indulgent fudge cake with a gooey chocolate center and rich ganache topping.',
-      sizes: [
-        { id: 'small', name: 'Small', price: 299, serves: '4' },
-        { id: 'medium', name: 'Medium', price: 328, serves: '6-8' },
-        { id: 'large', name: 'Large', price: 399, serves: '10' }
-      ],
-      ingredients: [
-        'Semi-sweet Chocolate',
-        'Wheat Flour',
-        'Sugar',
-        'Butter',
-        'Heavy Cream'
-      ],
-      allergens: ['Dairy', 'Gluten'],
-      nutritionInfo: {
-        calories: '410 per slice',
-        protein: '5g',
-        carbs: '50g',
-        fat: '21g'
-      },
-      reviews: [
-        {
-          id: 1,
-          name: 'Riya Kapoor',
-          rating: 5,
-          comment: 'Heavenly! Melts in your mouth.',
-          date: '2024-03-20'
-        },
-        {
-          id: 2,
-          name: 'Dev Patel',
-          rating: 4,
-          comment: 'Very chocolatey, a little dense though.',
-          date: '2024-03-17'
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "name": "Classic Chocolate Cake",
-      "price": 825,
-      rating: 4.7,
-      reviewCount: 112,
-      "image": "https://bkmedia.bakingo.com/choco-truffle-cake0005choc-a.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      "description": "A rich and moist chocolate cake topped with creamy chocolate frosting.",
-      "label": "Trending Cake",
-      "flavour": "Chocolate",
-      "sizes": [
-        { "id": "small", "name": "Small", "price": 775, "serves": "4-6" },
-        { "id": "medium", "name": "Medium", "price": 825, "serves": "8-10" },
-        { "id": "large", "name": "Large", "price": 925, "serves": "12-15" }
-      ],
-      "ingredients": [
-        "Premium Cocoa Powder",
-        "Organic Flour",
-        "Fresh Dairy",
-        "Natural Sweeteners",
-        "Pure Vanilla Extract"
-      ],
-      "allergens": ["Dairy", "Gluten"],
-      "nutritionInfo": {
-        "calories": "350 per slice",
-        "protein": "5g",
-        "carbs": "45g",
-        "fat": "18g"
-      },
-      "reviews": [
-        {
-          "id": 1,
-          "name": "Customer One",
-          "rating": 5,
-          "comment": "Amazing taste and quality!",
-          "date": "2024-01-01"
-        },
-        {
-          "id": 2,
-          "name": "Customer Two",
-          "rating": 4,
-          "comment": "Really good, just a little too sweet for me.",
-          "date": "2024-01-15"
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "name": "Chocolate Truffle Cake",
-      "price": 530,
-      rating: 4.7,
-      reviewCount: 112,
-      "image": "https://bkmedia.bakingo.com/mango-naked-cake-cake4692mang-A_0.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      "description": "Decadent layers of chocolate cake filled with velvety chocolate truffle.",
-      "label": "Trending Cake",
-      "flavour": "Chocolate",
-      "sizes": [
-        { "id": "small", "name": "Small", "price": 480, "serves": "4-6" },
-        { "id": "medium", "name": "Medium", "price": 530, "serves": "8-10" },
-        { "id": "large", "name": "Large", "price": 630, "serves": "12-15" }
-      ],
-      "ingredients": [
-        "Premium Cocoa Powder",
-        "Organic Flour",
-        "Fresh Dairy",
-        "Natural Sweeteners",
-        "Pure Vanilla Extract"
-      ],
-      "allergens": ["Dairy", "Gluten"],
-      "nutritionInfo": {
-        "calories": "350 per slice",
-        "protein": "5g",
-        "carbs": "45g",
-        "fat": "18g"
-      },
-      "reviews": [
-        {
-          "id": 1,
-          "name": "Customer One",
-          "rating": 5,
-          "comment": "Amazing taste and quality!",
-          "date": "2024-01-01"
-        },
-        {
-          "id": 2,
-          "name": "Customer Two",
-          "rating": 4,
-          "comment": "Really good, just a little too sweet for me.",
-          "date": "2024-01-15"
-        }
-      ]
-    }
-  ];
-
-
-  const surpriseCakes = [
-    {
-      id: 1,
-      name: 'Classic Chocolate Cake',
-      price: 825,
-      image: "https://bkmedia.bakingo.com/regular_cake_1.jpg?tr=w-484,dpr-1.5,q-70",
-      rating: 4.5,
-      reviewCount: 128,
-      description: 'A rich and moist chocolate cake topped with creamy chocolate frosting.'
-    },
-    {
-      id: 2,
-      name: 'Chocolate Truffle Cake',
-      price: 530,
-      image: "https://bkmedia.bakingo.com/photo_cake_desktop.jpg?tr=w-484,dpr-1.5,q-70",
-      rating: 4.8,
-      reviewCount: 95,
-      description: 'Decadent layers of chocolate cake filled with velvety chocolate truffle.'
-    },
-    {
-      id: 3,
-      name: 'Chocolate Fudge Cake',
-      price: 328,
-      image: "https://bkmedia.bakingo.com/theme_cake_9.jpg?tr=w-484,dpr-1.5,q-70",
-      rating: 4.3,
-      reviewCount: 76,
-      description: 'Indulgent fudge cake with a gooey chocolate center and rich ganache topping.'
-    },
-    {
-      id: 4,
-      name: 'Chocolate Fudge Cake',
-      price: 1228,
-      image: "https://bkmedia.bakingo.com/mango-naked-cake-cake4692mang-A_0.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      rating: 4.7,
-      reviewCount: 112,
-      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
-    },
-    {
-      id: 5,
-      name: 'Chocolate Fudge Cake',
-      price: 1228,
-      image: "https://bkmedia.bakingo.com/gourmet_cake_0.jpg?tr=w-484,dpr-1.5,q-70",
-      rating: 4.7,
-      reviewCount: 112,
-      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
-    }
-  ];
-
-  const bestSellers = [
-    {
-      id: 1,
-      name: 'Classic Chocolate Cake',
-      price: 825,
-      image: "https://bkmedia.bakingo.com/black-forest-cake0001chbl-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      rating: 4.5,
-      reviewCount: 128,
-      description: 'A rich and moist chocolate cake topped with creamy chocolate frosting.'
-    },
-    {
-      id: 2,
-      name: 'Chocolate Truffle Cake',
-      price: 530,
-      image: "https://bkmedia.bakingo.com/kitkat-chocolate-cake-cake1119choco-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      rating: 4.8,
-      reviewCount: 95,
-      description: 'Decadent layers of chocolate cake filled with velvety chocolate truffle.'
-    },
-    {
-      id: 3,
-      name: 'Chocolate Fudge Cake',
-      price: 328,
-      image: "https://bkmedia.bakingo.com/chocolate-chip-cake0008choc-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      rating: 4.3,
-      reviewCount: 76,
-      description: 'Indulgent fudge cake with a gooey chocolate center and rich ganache topping.'
-    },
-    {
-      id: 4,
-      name: 'Chocolate Fudge Cake',
-      price: 1228,
-      image: "https://bkmedia.bakingo.com/heart-shaped-red-velvet-cake-cake1095redv-AAA.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      rating: 4.7,
-      reviewCount: 112,
-      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
-    },
-    {
-      id: 5,
-      name: 'Chocolate Fudge Cake',
-      price: 1228,
-      image: "https://bkmedia.bakingo.com/fantasy-barbie-cake-them2655flav-A.jpg?tr=w-320,h-320,dpr-1.5,q-70",
-      rating: 4.7,
-      reviewCount: 112,
-      description: 'Soft chocolate sponge filled with fudge layers and topped with glossy glaze.'
-    }
-  ];
-
-
   const CakeCard = ({ cake }) => (
     <div
       className="group bg-white rounded-lg shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
-      onClick={() => navigate(`/cake/${cake.id}`,{state:{cake}})}
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate(`/cake/${cake._id}`);
+      }}
     >
       <div className="w-full aspect-square relative overflow-hidden p-4 pb-0">
         <img
@@ -549,7 +152,7 @@ const CakeGallery = () => {
           {cake.name}
         </h3>
         <p className="hidden lg:block md:block text-xs text-gray-600 mb-3 line-clamp-2">
-          {cake.description}
+          {cake.description.slice(0,100)}...
         </p>
         <div className="flex gap-2">
           <button
@@ -565,7 +168,7 @@ const CakeGallery = () => {
             className="hidden lg:block flex-1 border border-rose-300 text-rose-500 hover:bg-rose-50 px-2 py-1.5 rounded text-xs font-medium transition-colors duration-300"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/cake/${cake.id}`);
+              navigate(`/cake/${cake._id}`);
             }}
           >
             Details
@@ -627,12 +230,52 @@ const CakeGallery = () => {
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-amber-50 p-3 lg:p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading cakes...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-amber-50 p-3 lg:p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-amber-50 p-3 lg:p-6">
-      <CakeSection title="Our Trending Cakes" cakes={trendingCakes} scrollRef={trendingScrollRef} />
-      <CakeSection title="Surprise Your Love" cakes={surpriseCakes} backdrop scrollRef={surpriseScrollRef} />
+      <CakeSection 
+        title="Our Trending Cakes" 
+        cakes={trendingCakes} 
+        scrollRef={trendingScrollRef} 
+      />
+      <CakeSection 
+        title="Surprise Your Love" 
+        cakes={surpriseCakes} 
+        backdrop 
+        scrollRef={surpriseScrollRef} 
+      />
       <BackDropSection />
-      <CakeSection title="Our Best Sellers" cakes={bestSellers} scrollRef={bestSellersScrollRef} />
+      <CakeSection 
+        title="Our Best Sellers" 
+        cakes={bestSellers} 
+        scrollRef={bestSellersScrollRef} 
+      />
     </div>
   );
 };

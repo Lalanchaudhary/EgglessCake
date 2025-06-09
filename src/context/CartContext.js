@@ -1,13 +1,22 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './UserContext';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  // Initialize cart items from localStorage or empty array
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem('cartItems');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
   const { user } = useUser();
   const navigate = useNavigate();
+
+  // Save cart items to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addToCart = (item) => {
     if (!user) {
@@ -42,12 +51,17 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem('cartItems');
+  };
+
   const getCartCount = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   // Check for pending cart items after login
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       const pendingItem = localStorage.getItem('pendingCartItem');
       if (pendingItem) {
@@ -63,7 +77,8 @@ export const CartProvider = ({ children }) => {
       addToCart,
       removeFromCart,
       updateQuantity,
-      getCartCount
+      getCartCount,
+      clearCart
     }}>
       {children}
     </CartContext.Provider>

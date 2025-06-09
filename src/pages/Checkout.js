@@ -50,13 +50,7 @@ const Checkout = () => {
     isDefault: false
   });
 
-  // Payment form data
-  const [paymentFormData, setPaymentFormData] = useState({
-    cardName: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
-  });
+
 
   useEffect(() => {
     // Set default address if available

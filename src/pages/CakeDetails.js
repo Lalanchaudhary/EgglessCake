@@ -1,18 +1,21 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import cake from '../assets/cake.jpg';
 import { useCart } from '../context/CartContext';
+import { getCakeById, addReview } from '../services/cakeServices';
+import { toast } from 'react-toastify';
 
 const CakeDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const cakeData = location.state?.cake;
+  const [cakeData, setCakeData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('medium');
-  const {addToCart} = useCart();
+  const { addToCart } = useCart();
   const scrollContainerRef = useRef(null);
-  
   // New state for review form and modal
   const [newReview, setNewReview] = useState({
     rating: 0,
@@ -21,6 +24,28 @@ const CakeDetails = () => {
   });
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  // Fetch cake data if not available from location state
+  useEffect(() => {
+    const fetchCakeData = async () => {
+      if (!location.state?.cake) {
+        try {
+          setLoading(true);
+          const data = await getCakeById(id);
+          setCakeData(data);
+          setError(null);
+        } catch (err) {
+          console.error('Error fetching cake:', err);
+          setError('Failed to fetch cake details. Please try again later.');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchCakeData();
+  }, [id, location.state]);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -159,45 +184,86 @@ const CakeDetails = () => {
   };
 
   const handleAddToCart = () => {
-    addToCart(cakeData);
-    // Add to cart logic here
-    console.log('Added to cart:', {
-      cake: cakeData.name,
-      size: selectedSize,
+    if (!cakeData) return;
+    
+    const selectedSizeData = cakeData.sizes.find(size => size.id === selectedSize);
+    const cartItem = {
+      ...cakeData,
+      selectedSize: selectedSizeData,
       quantity: quantity
-    });
+    };
+    
+    addToCart(cartItem);
+    toast.success('Added to cart successfully!');
   };
 
-  // Add new function to handle review submission
-  const handleReviewSubmit = (e) => {
+  // Updated review submission handler
+  const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (newReview.rating === 0 || !newReview.comment || !newReview.name) {
-      alert('Please fill in all fields and select a rating');
+      toast.error('Please fill in all fields and select a rating');
       return;
     }
 
-    const review = {
-      id: cakeData.reviews.length + 1,
-      name: newReview.name,
-      rating: newReview.rating,
-      comment: newReview.comment,
-      date: new Date().toISOString().split('T')[0]
-    };
+    try {
+      setSubmittingReview(true);
+      const reviewData = {
+        name: newReview.name,
+        rating: newReview.rating,
+        comment: newReview.comment
+      };
 
-    // In a real application, you would send this to your backend
-    cakeData.reviews.unshift(review);
-    
-    // Reset form and close modal
-    setNewReview({
-      rating: 0,
-      comment: '',
-      name: ''
-    });
-    setIsReviewModalOpen(false);
+      console.log('====================================');
+      console.log("cake id",id);
+      console.log('====================================');
+      const updatedCake = await addReview(id, reviewData);
+      setCakeData(updatedCake);
+      
+      // Reset form and close modal
+      setNewReview({
+        rating: 0,
+        comment: '',
+        name: ''
+      });
+      setIsReviewModalOpen(false);
+      toast.success('Review submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      toast.error('Failed to submit review. Please try again later.');
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading cake details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !cakeData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error || 'Cake not found'}</p>
+          <button 
+            onClick={() => navigate(-1)} 
+            className="px-4 py-2 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 ">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <button
@@ -432,6 +498,7 @@ const CakeDetails = () => {
                 <button
                   onClick={() => setIsReviewModalOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
+                  disabled={submittingReview}
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -497,14 +564,23 @@ const CakeDetails = () => {
                     type="button"
                     onClick={() => setIsReviewModalOpen(false)}
                     className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                    disabled={submittingReview}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="bg-rose-300 hover:bg-rose-400 text-white font-semibold px-6 py-2 rounded-lg transition"
+                    className="bg-rose-300 hover:bg-rose-400 text-white font-semibold px-6 py-2 rounded-lg transition flex items-center gap-2"
+                    disabled={submittingReview}
                   >
-                    Submit Review
+                    {submittingReview ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Review'
+                    )}
                   </button>
                 </div>
               </form>

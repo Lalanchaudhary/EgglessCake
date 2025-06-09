@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
   orderId: {
     type: String,
-    required: true,
-    unique: true
+    unique: true,
+    index: true
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -14,21 +14,24 @@ const orderSchema = new mongoose.Schema({
   items: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      ref: 'Cake',
       required: true
     },
     quantity: {
       type: Number,
-      required: true
+      required: true,
+      min: 1
     },
     price: {
       type: Number,
-      required: true
+      required: true,
+      min: 0
     }
   }],
   totalAmount: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   status: {
     type: String,
@@ -68,8 +71,14 @@ const orderSchema = new mongoose.Schema({
       required: true
     },
     location: {
-      latitude: Number,
-      longitude: Number
+      latitude: {
+        type: Number,
+        required: function() { return this.location != null; }
+      },
+      longitude: {
+        type: Number,
+        required: function() { return this.location != null; }
+      }
     }
   },
   deliveryInstructions: {
@@ -95,7 +104,8 @@ const orderSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    immutable: true
   },
   updatedAt: {
     type: Date,
@@ -103,14 +113,9 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-// Update the updatedAt timestamp before saving
+// Pre-save hook to generate orderId and update updatedAt timestamp
 orderSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
-
-// Generate a unique order ID
-orderSchema.pre('save', async function(next) {
+  // Generate unique orderId if new
   if (this.isNew) {
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
@@ -119,15 +124,17 @@ orderSchema.pre('save', async function(next) {
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     this.orderId = `ORD${year}${month}${day}${random}`;
   }
+  // Always update updatedAt timestamp
+  this.updatedAt = Date.now();
   next();
 });
 
-// Add method to calculate total amount
+// Method to calculate total amount from items
 orderSchema.methods.calculateTotal = function() {
   return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
 };
 
-// Add method to update order status
+// Method to update order status
 orderSchema.methods.updateStatus = async function(newStatus) {
   this.status = newStatus;
   if (newStatus === 'Delivered') {
@@ -136,7 +143,7 @@ orderSchema.methods.updateStatus = async function(newStatus) {
   return this.save();
 };
 
-// Add method to verify payment
+// Method to verify Razorpay payment
 orderSchema.methods.verifyPayment = async function(paymentDetails) {
   if (this.paymentMethod === 'Razorpay') {
     this.razorpayPaymentId = paymentDetails.paymentId;
@@ -148,4 +155,4 @@ orderSchema.methods.verifyPayment = async function(paymentDetails) {
 
 const Order = mongoose.model('Order', orderSchema);
 
-module.exports = Order; 
+module.exports = Order;

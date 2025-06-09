@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-
+const Order=require("../models/Order")
 // Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -334,8 +334,63 @@ exports.updateSettings = async (req, res) => {
 // Get orders
 exports.getOrders = async (req, res) => {
   try {
-    res.json(req.user.orders);
+    const orders = await Order.find({ user: req.user._id })
+      .populate('user', 'name email phoneNumber')
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
   } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Cancel order
+exports.cancelOrder = async (req, res) => {
+  console.log('====================================');
+  console.log("Cancel order");
+  console.log('====================================');
+  try {
+    const { orderId } = req.params;
+    
+    // Find the order and verify ownership
+    const order = await Order.findOne({ 
+      _id: orderId,
+      user: req.user._id 
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Check if order can be cancelled
+    if (order.status !== 'Pending') {
+      return res.status(400).json({ 
+        error: 'Only pending orders can be cancelled' 
+      });
+    }
+
+    // Update order status
+    order.status = 'Cancelled';
+    order.cancelledAt = new Date();
+    order.cancellationReason = req.body.reason || 'Cancelled by user';
+    
+    await order.save();
+
+    // If order was paid, initiate refund process
+    if (order.paymentStatus === 'Paid') {
+      // Add refund logic here
+      // This could involve:
+      // 1. Creating a refund record
+      // 2. Processing the refund through payment gateway
+      // 3. Updating user's wallet if applicable
+    }
+
+    res.json({
+      message: 'Order cancelled successfully',
+      order
+    });
+  } catch (error) {
+    console.error('Cancel order error:', error);
     res.status(400).json({ error: error.message });
   }
 };

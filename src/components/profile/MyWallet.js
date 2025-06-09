@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
+
 import {
   Box,
   Typography,
@@ -20,16 +21,45 @@ import {
   TableRow,
   Paper,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Chip,
+  IconButton,
+  Tooltip
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Info as InfoIcon, Receipt as ReceiptIcon } from '@mui/icons-material';
+import axios from 'axios';
+import {
+  fetchWalletTransactions
+} from '../../services/paymentServices';
 
 const MyWallet = () => {
-  const { user, addMoney } = useUser();
+  const { user, updateUser } = useUser();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [refundDetails, setRefundDetails] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      setIsRefreshing(true);
+      const data = await fetchWalletTransactions();
+      console.log('====================================');
+      console.log(data);
+      console.log('====================================');
+      setTransactions(data.transactions);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -37,141 +67,49 @@ const MyWallet = () => {
     setAmount('');
     setError(null);
   };
-
-  const handleAddMoney = async () => {
-    if (!amount || isNaN(amount) || amount <= 0) {
-      setError('Please enter a valid amount');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await addMoney(Number(amount));
-      handleClose();
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to add money');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getTransactionColor = (type) => {
-    return type === 'Credit' ? 'success.main' : 'error.main';
-  };
-
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
-        My Wallet
-      </Typography>
+      {error && (
+        <Alert 
+          severity="error" 
+          sx={{ mb: 2 }}
+          onClose={() => setError(null)}
+        >
+          {error}
+        </Alert>
+      )}
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Wallet Balance
-              </Typography>
-              <Typography variant="h4" color="primary">
-                ₹{user?.wallet?.balance || 0}
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleOpen}
-                sx={{ mt: 2 }}
-              >
-                Add Money
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
+<div className="bg-white shadow rounded-lg p-6">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">My Wallet</h2>
+      
+      {/* Balance Card */}
+      <div className="bg-gradient-to-r from-[#e098b0] to-[#d88aa2] rounded-lg p-6 text-white mb-6">
+        <h3 className="text-lg font-medium mb-2">Available Balance</h3>
+        <p className="text-3xl font-bold">₹{user?.wallet?.balance.toFixed(2) || 0}</p>
+      </div>
 
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Transaction History
-              </Typography>
-              {user?.wallet?.transactions?.length > 0 ? (
-                <TableContainer component={Paper} variant="outlined">
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Description</TableCell>
-                        <TableCell align="right">Amount</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {user.wallet.transactions.map((transaction, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
-                            {new Date(transaction.date).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color={getTransactionColor(transaction.type)}
-                            >
-                              {transaction.type}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>{transaction.description}</TableCell>
-                          <TableCell align="right">
-                            <Typography
-                              color={getTransactionColor(transaction.type)}
-                            >
-                              ₹{transaction.amount}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              ) : (
-                <Typography color="textSecondary" align="center" py={2}>
-                  No transactions found
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
 
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add Money to Wallet</DialogTitle>
-        <DialogContent>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Amount"
-            type="number"
-            fullWidth
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            InputProps={{
-              startAdornment: '₹'
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            onClick={handleAddMoney}
-            variant="contained"
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={24} /> : 'Add Money'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Transaction History */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction History</h3>
+        <div className="space-y-4">
+          {transactions.map((transaction) => (
+            <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <p className="font-medium text-gray-900">{transaction.description}</p>
+                <p className="text-sm text-gray-500">{transaction.date}</p>
+              </div>
+              <span className={`font-semibold ${
+                transaction.type === 'Credit' ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {transaction.type === 'Credit' ? '+' : ''}{transaction.amount.toFixed(2)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
     </Box>
   );
 };

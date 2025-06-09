@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 const API_URL ='http://localhost:9000';
 
 // Create axios instance with default config
@@ -123,7 +122,70 @@ export const getOrders = async () => {
   const response = await api.get('/users/orders');
   return response.data;
 };
+export const cancelOrder = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error('Order ID is required');
+    }
 
+    // // Get order details
+    // const orderResponse = await api.get('/users/orders');
+    // console.log('====================================');
+    // console.log(orderResponse);
+    // console.log('====================================');
+    // const order = orderResponse;
+
+    // if (!order) {
+    //   throw new Error('Order not found');
+    // }
+
+    // // Check if order is in cancellable state
+    // if (order.status !== 'Pending') {
+    //   throw new Error(`Cannot cancel order in ${order.status} state. Only Pending orders can be cancelled.`);
+    // }
+
+    // // Check cancellation time limit (24 hours)
+    // const orderDate = new Date(order.createdAt);
+    // const now = new Date();
+    // const hoursSinceOrder = (now - orderDate) / (1000 * 60 * 60);
+
+    // if (hoursSinceOrder > 24) {
+    //   throw new Error('Order can only be cancelled within 24 hours of placement');
+    // }
+
+    // Step 1: Cancel the order
+    const cancelResponse = await api.get(`/users/orders/${orderId}/cancel`);
+    console.log('====================================');
+    console.log(cancelResponse);
+    console.log('====================================');
+    // Step 2: If order was paid, trigger refund
+    let refundResponse = null;
+    if (cancelResponse.data.order.paymentStatus === 'Completed') {
+      refundResponse = await api.post(`/payment/refund-to-wallet/${orderId}`);
+    }
+
+    return {
+      message: 'Order cancelled successfully',
+      refundInitiated: !!refundResponse,
+      refundDetails: refundResponse?.data || null
+    };
+
+  } catch (error) {
+    if (error.response) {
+      switch (error.response.status) {
+        case 404:
+          throw new Error('Order not found');
+        case 400:
+          throw new Error(error.response.data.message || 'Invalid request');
+        case 403:
+          throw new Error('You are not authorized to cancel this order');
+        default:
+          throw new Error('Failed to cancel order. Please try again later.');
+      }
+    }
+    throw error;
+  }
+};
 // Membership services
 export const getMembership = async () => {
   const response = await api.get('/users/membership');

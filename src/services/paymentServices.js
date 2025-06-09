@@ -1,6 +1,41 @@
 import axios from 'axios';
-
+import { SiRazorpay } from "react-icons/si";
+import { CiWallet } from "react-icons/ci";
+import { BsCash } from "react-icons/bs";
 const API_URL = 'http://localhost:9000';
+const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  // Add token to requests if it exists
+  api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('No authentication token found');
+    }
+    return config;
+  }, (error) => {
+    return Promise.reject(error);
+  });
+
+// Add response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear token and redirect to login if unauthorized
+    //   localStorage.removeItem('token');
+    //   window.location.href = '/login';
+    console.warn('401 error: token might be invalid or expired');
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Initialize Razorpay
 const initializeRazorpay = () => {
@@ -18,110 +53,115 @@ const initializeRazorpay = () => {
 };
 
 // Create Razorpay Order
-const createRazorpayOrder = async (amount) => {
+const createRazorpayOrder = async (orderData) => {
   try {
-    const response = await axios.post(`${API_URL}/payment/create-order`, {
-      amount: amount * 100, // Convert to paise
-      currency: 'INR',
-      receipt: 'receipt_' + Date.now(),
-    });
+    // Check if token exists
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Authentication required. Please login.');
+    }
+
+    const response = await api.post('/payment/create-order', orderData);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.error || 'Failed to create order');
+    console.error('Error creating Razorpay order:', error);
+    if (error.response?.status === 401) {
+      throw new Error('Session expired. Please login again.');
+    }
+    throw new Error(error.response?.data?.message || 'Failed to create order');
   }
 };
 
 // Verify Razorpay Payment
 const verifyRazorpayPayment = async (paymentData) => {
   try {
-    const response = await axios.post(`${API_URL}/payment/verify-order`, paymentData);
+    const response = await api.post('/payment/verify-order', paymentData);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.error || 'Payment verification failed');
+    console.error('Error verifying payment:', error);
+    throw new Error(error.response?.data?.message || 'Payment verification failed');
   }
 };
 
 // Handle Razorpay Payment
-const handleRazorpayPayment = async (orderData, userData) => {
-  try {
-    const res = await initializeRazorpay();
-    if (!res) {
-      throw new Error('Razorpay SDK failed to load');
+const handleRazorpayPayment = async (orderData) => {
+    try {
+      const res = await initializeRazorpay();
+      if (!res) throw new Error('Razorpay SDK failed to load');
+  
+      const order = await createRazorpayOrder(orderData);
+  
+      return new Promise((resolve, reject) => {
+        const options = {
+          key: 'rzp_test_1FGhUyAJx6vnYE',
+          amount: order.amount,
+          currency: order.currency,
+          name: 'EggLessCake',
+          description: 'Payment for your order',
+          order_id: order.id,
+  
+          handler: async function (response) {
+            try {
+              const verifyData = await verifyRazorpayPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                orderId: order.orderId || orderData.orderId || order._id, // fix this if needed
+              });
+  
+              resolve({ success: true, data: verifyData });
+            } catch (err) {
+              console.error('Payment verification error:', err);
+              reject(new Error('Payment verification failed'));
+            }
+          },
+  
+          prefill: {
+            name: orderData.userData?.name || 'Test User',
+            email: orderData.userData?.email || 'test@example.com',
+            contact: orderData.userData?.phoneNumber || '9999999999',
+          },
+  
+          theme: { color: '#272361' },
+  
+          modal: {
+            escape: false,
+            backdropclose: false,
+          },
+        };
+  
+        const paymentObject = new window.Razorpay(options);
+  
+        paymentObject.on('payment.failed', function (response) {
+          console.error('Razorpay payment failed:', response.error);
+          reject(new Error(response.error.description || 'Payment failed'));
+        });
+  
+        paymentObject.on('modal.closed', function () {
+          console.warn('Payment popup was closed by user');
+          reject(new Error('Payment cancelled by user'));
+        });
+  
+        paymentObject.open();
+      });
+    } catch (error) {
+      console.error('Razorpay payment error:', error);
+      throw error;
     }
-
-    const order = await createRazorpayOrder(orderData.amount);
-
-    const options = {
-      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-      amount: order.amount,
-      currency: order.currency,
-      name: 'EggLessCake',
-      description: 'Payment for your order',
-      order_id: order.id,
-      handler: async function (response) {
-        try {
-          const verifyData = await verifyRazorpayPayment({
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-          });
-
-          if (verifyData.success) {
-            return { success: true, orderId: order.id };
-          } else {
-            throw new Error('Payment verification failed');
-          }
-        } catch (err) {
-          throw new Error('Payment verification failed');
-        }
-      },
-      prefill: {
-        name: userData.name,
-        email: userData.email,
-        contact: userData.phone,
-      },
-      theme: {
-        color: '#272361',
-      },
-      method: {
-        netbanking: true,
-        card: true,
-        upi: true,
-        wallet: true,
-        emi: true,
-      },
-      modal: {
-        escape: false,
-        backdropclose: false,
-      }
-    };
-
-    return new Promise((resolve, reject) => {
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.on('payment.failed', function (response) {
-        reject(new Error('Payment failed'));
-      });
-      paymentObject.on('payment.success', function (response) {
-        resolve({ success: true, orderId: order.id });
-      });
-      paymentObject.open();
-    });
-  } catch (error) {
-    throw error;
-  }
-};
+  };
+  
 
 // Handle COD Payment
 const handleCODPayment = async (orderData) => {
   try {
-    const response = await axios.post(`${API_URL}/payment/cod`, {
+    const response = await api.post('/payment/cod', {
       items: orderData.items,
       totalAmount: orderData.totalAmount,
-      shippingAddress: orderData.shippingAddress,
-      userId: orderData.userId
+      shippingAddress: orderData.shippingAddress
     });
     return response.data;
   } catch (error) {
+    console.error('COD payment error:', error);
     throw new Error(error.response?.data?.message || 'Failed to place COD order');
   }
 };
@@ -129,17 +169,28 @@ const handleCODPayment = async (orderData) => {
 // Handle Wallet Payment
 const handleWalletPayment = async (orderData) => {
   try {
-    const response = await axios.post(`${API_URL}/payment/wallet`, {
+    const response = await api.post('/payment/payment/wallet', {
       items: orderData.items,
       totalAmount: orderData.totalAmount,
-      shippingAddress: orderData.shippingAddress,
-      userId: orderData.userId
+      shippingAddress: orderData.shippingAddress
     });
     return response.data;
   } catch (error) {
+    console.error('Wallet payment error:', error);
     throw new Error(error.response?.data?.message || 'Failed to process wallet payment');
   }
 };
+
+const fetchWalletTransactions = async () => {
+  try {
+    const response = await api.get('/payment/wallet/transactions');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching wallet transactions:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch wallet transactions');
+  }
+};
+
 
 // Get Payment Methods
 const getPaymentMethods = () => {
@@ -148,21 +199,21 @@ const getPaymentMethods = () => {
       id: 'razorpay',
       name: 'Razorpay',
       description: 'Pay with Cards, UPI, Netbanking',
-      icon: 'https://razorpay.com/assets/razorpay-logo-white.svg',
+      icon: SiRazorpay,
       available: true
     },
     {
       id: 'cod',
       name: 'Cash on Delivery',
       description: 'Pay when you receive',
-      icon: '/icons/cod.svg',
+      icon: BsCash,
       available: true
     },
     {
       id: 'wallet',
       name: 'Wallet Balance',
       description: 'Pay using your wallet balance',
-      icon: '/icons/wallet.svg',
+      icon: CiWallet,
       available: true
     }
   ];
@@ -171,9 +222,10 @@ const getPaymentMethods = () => {
 // Get Payment Status
 const getPaymentStatus = async (orderId) => {
   try {
-    const response = await axios.get(`${API_URL}/payment/status/${orderId}`);
+    const response = await api.get(`/payment/status/${orderId}`);
     return response.data;
   } catch (error) {
+    console.error('Get payment status error:', error);
     throw new Error(error.response?.data?.message || 'Failed to get payment status');
   }
 };
@@ -186,5 +238,6 @@ export {
   handleCODPayment,
   handleWalletPayment,
   getPaymentMethods,
-  getPaymentStatus
+  getPaymentStatus,
+  fetchWalletTransactions
 }; 
