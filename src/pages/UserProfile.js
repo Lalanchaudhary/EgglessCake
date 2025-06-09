@@ -5,130 +5,7 @@ import AddressBook from '../components/profile/AddressBook';
 import { getProfile ,logout , updateProfile} from '../services/userService';
 import Loading from '../components/Loading';
 import MyWallet from '../components/profile/MyWallet';
-// MyWallet Component
-// const MyWallet = () => {
 
-  
-//   const walletData = {
-//     balance: 1250.75,
-//     transactions: [
-//       { id: 1, type: 'Credit', amount: 500, date: '2024-03-15', description: 'Added to wallet' },
-//       { id: 2, type: 'Debit', amount: -299.99, date: '2024-03-10', description: 'Order #ORD-2024-002' },
-//       { id: 3, type: 'Credit', amount: 1000, date: '2024-03-01', description: 'Added to wallet' },
-//     ],
-//   };
-
-//   return (
-    // <div className="bg-white shadow rounded-lg p-6">
-    //   <h2 className="text-2xl font-bold text-gray-900 mb-6">My Wallet</h2>
-      
-    //   {/* Balance Card */}
-    //   <div className="bg-gradient-to-r from-[#e098b0] to-[#d88aa2] rounded-lg p-6 text-white mb-6">
-    //     <h3 className="text-lg font-medium mb-2">Available Balance</h3>
-    //     <p className="text-3xl font-bold">₹{user?.wallet?.balance || 0}</p>
-    //   </div>
-
-    //   {/* Add Money Button */}
-    //   <button className="w-full mb-6 px-4 py-2 bg-[#e098b0] text-white rounded-md hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]" onClick={handleOpen}>
-    //     Add Money
-    //   </button>
-
-    //   {/* Transaction History */}
-    //   <div>
-    //     <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction History</h3>
-    //     <div className="space-y-4">
-    //       {transactions.map((transaction) => (
-    //         <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
-    //           <div>
-    //             <p className="font-medium text-gray-900">{transaction.description}</p>
-    //             <p className="text-sm text-gray-500">{transaction.date}</p>
-    //           </div>
-    //           <span className={`font-semibold ${
-    //             transaction.type === 'Credit' ? 'text-green-600' : 'text-red-600'
-    //           }`}>
-    //             {transaction.type === 'Credit' ? '+' : ''}{transaction.amount.toFixed(2)}
-    //           </span>
-    //         </div>
-    //       ))}
-    //     </div>
-    //   </div>
-    // </div>
-//   );
-// };
-
-// AddressBook Component
-// const AddressBook = () => {
-//   const addresses = [
-//     {
-//       id: 1,
-//       type: 'Home',
-//       name: 'John Doe',
-//       address: '123 Main St, Apartment 4B',
-//       city: 'New York',
-//       state: 'NY',
-//       zip: '10001',
-//       phone: '+1 234-567-8900',
-//       isDefault: true,
-//     },
-//     {
-//       id: 2,
-//       type: 'Office',
-//       name: 'John Doe',
-//       address: '456 Business Ave, Suite 100',
-//       city: 'New York',
-//       state: 'NY',
-//       zip: '10002',
-//       phone: '+1 234-567-8901',
-//       isDefault: false,
-//     },
-//   ];
-
-//   return (
-//     <div className="bg-white shadow rounded-lg p-6">
-//       <div className="flex justify-between items-center mb-6">
-//         <h2 className="text-2xl font-bold text-gray-900">Address Book</h2>
-//         <button className="px-4 py-2 bg-[#e098b0] text-white rounded-md hover:bg-[#d88aa2] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e098b0]">
-//           Add New Address
-//         </button>
-//       </div>
-
-//       <div className="space-y-4">
-//         {addresses.map((address) => (
-//           <div key={address.id} className="border rounded-lg p-4">
-//             <div className="flex justify-between items-start mb-4">
-//               <div>
-//                 <div className="flex items-center space-x-2">
-//                   <h3 className="text-lg font-semibold text-gray-900">{address.type}</h3>
-//                   {address.isDefault && (
-//                     <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-//                       Default
-//                     </span>
-//                   )}
-//                 </div>
-//                 <p className="text-gray-600">{address.name}</p>
-//               </div>
-//               <div className="flex space-x-2">
-//                 <button className="text-gray-600 hover:text-[#e098b0]">
-//                   Edit
-//                 </button>
-//                 <button className="text-red-600 hover:text-red-700">
-//                   Delete
-//                 </button>
-//               </div>
-//             </div>
-//             <div className="text-gray-600">
-//               <p>{address.address}</p>
-//               <p>{address.city}, {address.state} {address.zip}</p>
-//               <p>{address.phone}</p>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// ManageSavedUPI Component
 const ManageSavedUPI = () => {
   const upiAccounts = [
     {
@@ -526,7 +403,7 @@ const UserProfile = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
-        <div className="w-full md:w-64 bg-white shadow-lg">
+        <div className="w-full md:w-64 bg-white shadow-lg z-50">
           <div className="p-4">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">My Account</h2>
             <nav>
