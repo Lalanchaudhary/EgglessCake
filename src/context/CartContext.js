@@ -19,9 +19,8 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (item) => {
-    if (!user) {
-      // Store the intended item in localStorage to add after login
-      localStorage.setItem('pendingCartItem', JSON.stringify(item));
+    const token=localStorage.getItem("token");
+    if (!token) {
       // Redirect to login page
       navigate('/login');
       return;
