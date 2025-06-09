@@ -24,17 +24,23 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import ShipAddr from '../components/checkout/ShipAddr';
 import Payment from '../components/checkout/Payment';
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems } = useCart();
-  const { user} = useUser();
+  const { user } = useUser();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedAddress, setSelectedAddress1] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   
   // Address form data
   const [addressFormData, setAddressFormData] = useState({
@@ -49,8 +55,6 @@ const Checkout = () => {
     },
     isDefault: false
   });
-
-
 
   useEffect(() => {
     // Set default address if available
@@ -110,17 +114,21 @@ const Checkout = () => {
         );
       case 3:
         return (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Order Review</h2>
+          <Box sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
+            <Typography variant="h6" sx={{ mb: 2, fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+              Order Review
+            </Typography>
             {error && (
-              <Alert severity="error" className="mb-4">
+              <Alert severity="error" sx={{ mb: 2 }}>
                 {error}
               </Alert>
             )}
             <Card sx={{ mb: 2 }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>Shipping Information</Typography>
-                <Typography>
+                <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.1rem' }, mb: 1 }}>
+                  Shipping Information
+                </Typography>
+                <Typography sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
                   {user?.name}<br />
                   {selectedAddress?.street}<br />
                   {selectedAddress?.city}, {selectedAddress?.state} {selectedAddress?.pincode}<br />
@@ -131,34 +139,47 @@ const Checkout = () => {
             </Card>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>Order Summary</Typography>
+                <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.1rem' }, mb: 1 }}>
+                  Order Summary
+                </Typography>
                 {cartItems.map(item => (
-                  <Box key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+                  <Box key={item.id} sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    py: 1,
+                    fontSize: { xs: '0.9rem', sm: '1rem' }
+                  }}>
                     <Typography>{item.name} x {item.quantity}</Typography>
                     <Typography>${(item.price * item.quantity).toFixed(2)}</Typography>
                   </Box>
                 ))}
                 <Box sx={{ borderTop: 1, borderColor: 'divider', mt: 2, pt: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
                     <Typography>Subtotal</Typography>
                     <Typography>${subtotal.toFixed(2)}</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
                     <Typography>Shipping</Typography>
                     <Typography>${shipping.toFixed(2)}</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
                     <Typography>Tax</Typography>
                     <Typography>${tax.toFixed(2)}</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, fontWeight: 'bold' }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    mt: 2, 
+                    fontWeight: 'bold',
+                    fontSize: { xs: '1rem', sm: '1.1rem' }
+                  }}>
                     <Typography variant="subtitle1">Total</Typography>
                     <Typography variant="subtitle1">${total.toFixed(2)}</Typography>
                   </Box>
                 </Box>
               </CardContent>
             </Card>
-          </div>
+          </Box>
         );
       default:
         return null;
@@ -166,45 +187,105 @@ const Checkout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">Checkout</h1>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      bgcolor: 'background.default',
+      py: { xs: 2, sm: 4, md: 6 },
+      px: { xs: 1, sm: 2, md: 3 }
+    }}>
+      <Box sx={{ 
+        maxWidth: '1200px', 
+        mx: 'auto',
+        px: { xs: 1, sm: 2, md: 3 }
+      }}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            mb: { xs: 3, sm: 4, md: 6 },
+            fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+            textAlign: { xs: 'center', sm: 'left' }
+          }}
+        >
+          Checkout
+        </Typography>
         
         {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <Box sx={{ mb: { xs: 4, sm: 6, md: 8 } }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: { xs: 2, sm: 0 }
+          }}>
             {['Shipping', 'Payment', 'Review'].map((step, index) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  currentStep > index + 1 ? 'bg-rose-500' : 
-                  currentStep === index + 1 ? 'bg-rose-300' : 'bg-gray-200'
-                }`}>
-                  <span className="text-white font-medium">{index + 1}</span>
-                </div>
-                <span className={`ml-2 text-sm ${
-                  currentStep === index + 1 ? 'text-rose-500 font-medium' : 'text-gray-500'
-                }`}>{step}</span>
-                {index < 2 && (
-                  <div className={`w-16 h-0.5 mx-4 ${
-                    currentStep > index + 1 ? 'bg-rose-500' : 'bg-gray-200'
-                  }`} />
+              <Box key={step} sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                width: { xs: '100%', sm: 'auto' }
+              }}>
+                <Box sx={{ 
+                  width: { xs: 32, sm: 36 },
+                  height: { xs: 32, sm: 36 },
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: currentStep > index + 1 ? 'primary.main' : 
+                          currentStep === index + 1 ? 'primary.light' : 'grey.300'
+                }}>
+                  <Typography sx={{ 
+                    color: 'white', 
+                    fontWeight: 'medium',
+                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                  }}>
+                    {index + 1}
+                  </Typography>
+                </Box>
+                <Typography sx={{ 
+                  ml: 1,
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  color: currentStep === index + 1 ? 'primary.main' : 'text.secondary',
+                  fontWeight: currentStep === index + 1 ? 'medium' : 'normal'
+                }}>
+                  {step}
+                </Typography>
+                {index < 2 && !isMobile && (
+                  <Box sx={{ 
+                    width: { xs: 32, sm: 64, md: 96 },
+                    height: 2,
+                    mx: 2,
+                    bgcolor: currentStep > index + 1 ? 'primary.main' : 'grey.300'
+                  }} />
                 )}
-              </div>
+              </Box>
             ))}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
         {/* Form */}
-        <form onSubmit={handleOrderSubmit} className="bg-white rounded-lg shadow-md p-6">
+        <Box component="form" onSubmit={handleOrderSubmit} sx={{ 
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          boxShadow: 1,
+          p: { xs: 2, sm: 3, md: 4 }
+        }}>
           {renderStep()}
           
           {/* Navigation Buttons */}
-          <div className="mt-8 flex justify-between">
+          <Box sx={{ 
+            mt: { xs: 4, sm: 6 },
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 2, sm: 0 },
+            justifyContent: 'space-between'
+          }}>
             {currentStep > 1 && (
               <Button
                 variant="outlined"
                 onClick={prevStep}
                 disabled={loading}
+                fullWidth={isMobile}
               >
                 Back
               </Button>
@@ -214,7 +295,12 @@ const Checkout = () => {
                 variant="contained"
                 onClick={nextStep}
                 disabled={loading || (currentStep === 1 && !selectedAddress)}
-                sx={{ ml: 'auto', bgcolor: '#272361', '&:hover': { bgcolor: '#272361' } }}
+                sx={{ 
+                  ml: { sm: 'auto' },
+                  bgcolor: '#272361',
+                  '&:hover': { bgcolor: '#272361' },
+                  width: { xs: '100%', sm: 'auto' }
+                }}
               >
                 Next
               </Button>
@@ -223,15 +309,20 @@ const Checkout = () => {
                 type="submit"
                 variant="contained"
                 disabled={loading}
-                sx={{ ml: 'auto', bgcolor: '#e098b0', '&:hover': { bgcolor: '#d88aa2' } }}
+                sx={{ 
+                  ml: { sm: 'auto' },
+                  bgcolor: '#e098b0',
+                  '&:hover': { bgcolor: '#d88aa2' },
+                  width: { xs: '100%', sm: 'auto' }
+                }}
               >
                 {loading ? <CircularProgress size={24} /> : 'Place Order'}
               </Button>
             )}
-          </div>
-        </form>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
