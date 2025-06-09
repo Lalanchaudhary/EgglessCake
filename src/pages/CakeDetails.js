@@ -194,7 +194,11 @@ const CakeDetails = () => {
     };
     
     addToCart(cartItem);
-    toast.success('Added to cart successfully!');
+    const token=localStorage.getItem("token");
+    if(token){
+      toast.success('Added to cart successfully!');
+    }
+
   };
 
   // Updated review submission handler
