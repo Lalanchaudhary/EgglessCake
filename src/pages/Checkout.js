@@ -290,7 +290,7 @@ const Checkout = () => {
                 Back
               </Button>
             )}
-            {currentStep < 3 ? (
+            {currentStep < 2 ? (
               <Button
                 variant="contained"
                 onClick={nextStep}
@@ -304,21 +304,8 @@ const Checkout = () => {
               >
                 Next
               </Button>
-            ) : (
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={loading}
-                sx={{ 
-                  ml: { sm: 'auto' },
-                  bgcolor: '#e098b0',
-                  '&:hover': { bgcolor: '#d88aa2' },
-                  width: { xs: '100%', sm: 'auto' }
-                }}
-              >
-                {loading ? <CircularProgress size={24} /> : 'Place Order'}
-              </Button>
-            )}
+            ) : ''
+            }
           </Box>
         </Box>
       </Box>
