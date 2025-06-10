@@ -242,7 +242,7 @@ const payWithWallet = async (req, res) => {
       shippingAddress,
       paymentMethod: 'Wallet',
       paymentStatus: 'Completed',
-      status: 'Processing'
+      status: 'Pending'
     });
 
     const savedOrder = await newOrder.save();

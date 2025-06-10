@@ -187,18 +187,34 @@ const CakeDetails = () => {
     if (!cakeData) return;
     
     const selectedSizeData = cakeData.sizes.find(size => size.id === selectedSize);
+    if (!selectedSizeData) {
+      toast.error('Please select a size');
+      return;
+    }
+
     const cartItem = {
-      ...cakeData,
+      id: cakeData._id,
+      name: cakeData.name,
+      image: cakeData.image,
+      price: selectedSizeData.price,
       selectedSize: selectedSizeData,
-      quantity: quantity
+      quantity: quantity,
+      totalPrice: selectedSizeData.price * quantity
     };
     
     addToCart(cartItem);
-    const token=localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if(token){
       toast.success('Added to cart successfully!');
+    } else {
+      toast.error('Please login to add items to cart');
     }
+  };
 
+  // Update size selection handler
+  const handleSizeSelection = (sizeId) => {
+    setSelectedSize(sizeId);
+    setQuantity(1); // Reset quantity when size changes
   };
 
   // Updated review submission handler
@@ -317,7 +333,7 @@ const CakeDetails = () => {
                   {cakeData.sizes.map((size) => (
                     <button
                       key={size.id}
-                      onClick={() => setSelectedSize(size.id)}
+                      onClick={() => handleSizeSelection(size.id)}
                       className={`p-3 rounded-lg border-2 transition-all ${
                         selectedSize === size.id
                           ? 'border-rose-300 bg-rose-50'

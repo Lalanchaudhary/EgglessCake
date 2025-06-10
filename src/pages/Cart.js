@@ -6,6 +6,9 @@ import cake from '../assets/cake.jpg';
 const Cart = () => {
   const navigate = useNavigate();
   const { cartItems, updateQuantity, removeFromCart } = useCart();
+  console.log('====================================');
+  console.log(cartItems);
+  console.log('====================================');
 
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   const shipping = 5.99;

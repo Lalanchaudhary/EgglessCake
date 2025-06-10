@@ -110,8 +110,8 @@ const Users = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Phone</TableCell>
+              <TableCell>Wallet</TableCell>
               <TableCell>Joined Date</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -122,18 +122,10 @@ const Users = () => {
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  <Chip
-                    label={user.role}
-                    color={user.role === 'admin' ? 'primary' : 'default'}
-                    size="small"
-                  />
+                <TableCell>{user.phoneNumber}</TableCell>
                 </TableCell>
                 <TableCell>
-                  <Chip
-                    label={user.status}
-                    color={getStatusColor(user.status)}
-                    size="small"
-                  />
+                <TableCell>₹{user.wallet.balance}</TableCell>
                 </TableCell>
                 <TableCell>
                   {new Date(user.createdAt).toLocaleDateString()}
