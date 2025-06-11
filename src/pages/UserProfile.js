@@ -403,7 +403,7 @@ const UserProfile = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
-        <div className="w-full md:w-64 bg-white shadow-lg z-50">
+        <div className="w-full md:w-64 bg-white shadow-lg">
           <div className="p-4">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">My Account</h2>
             <nav>
