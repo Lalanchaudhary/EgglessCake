@@ -2,7 +2,7 @@ import axios from 'axios';
 // import { API_URL } from '../config';
 
 const api = axios.create({
-  baseURL: `https://eggless-backend-1.onrender.com/admin`,
+  baseURL: `http://localhost:9000/admin`,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -42,6 +42,9 @@ export const updateOrderStatus = async (orderId, status) => {
     const response = await api.put(`/orders/${orderId}/status`, { status });
     return response.data;
   } catch (error) {
+    console.log('====================================');
+    console.log(error);
+    console.log('====================================');
     throw error.response?.data || { message: 'Failed to update order status' };
   }
 };

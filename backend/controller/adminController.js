@@ -122,21 +122,44 @@ exports.getOrderById = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
   try {
+    const { id } = req.params;
     const { status } = req.body;
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    ).populate('user', 'name email')
-     .populate('items.product', 'name price');
-
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    console.log('====================================');
+    console.log("order status",req.params);
+    console.log('====================================');
+    const validStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid order status' });
     }
 
-    res.json({ order });
+    const order = await Order.findById(id);
+    console.log('====================================');
+    console.log("order status",order);
+    console.log('====================================');
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    order.status = status;
+
+    // Optional: Add timestamp updates for status transitions
+    // if (status === 'Processing') {
+    //   order.processedAt = new Date();
+    // } else if (status === 'Shipped') {
+    //   order.shippedAt = new Date();
+    // } else if (status === 'Delivered') {
+    //   order.deliveredAt = new Date();
+    // } else if (status === 'Cancelled') {
+    //   order.cancelledAt = new Date();
+    // }
+
+    await order.save();
+
+    res.json({ message: 'Order status updated successfully', order });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Order status update error:', error);
+    res.status(500).json({ error: 'Failed to update order status' });
   }
 };
 
