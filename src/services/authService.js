@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://eggless-backend-1.onrender.com',
+  baseURL: 'http://localhost:9000',
   headers: {
     'Content-Type': 'application/json'
   }

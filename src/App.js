@@ -26,7 +26,7 @@ import AdminProducts from './components/admin/Products'
 import Users from './components/admin/Users'
 import Analytics from './components/admin/Analytics'
 import AdminLogin from './pages/AdminLogin'
-
+import DeliveryBoys from './components/admin/DeliveryBoys'
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token')
@@ -85,6 +85,7 @@ const App = () => {
             {/* Public Routes */}
             <Route path="/" element={<HeroSection />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/delievery" element={<DeliveryBoys />} />
             <Route path="/all-cakes" element={<AllCakes />} />
             <Route path="/cake/:id" element={<CakeDetails />} />
             <Route path="/about-us" element={<AboutUs />} />
