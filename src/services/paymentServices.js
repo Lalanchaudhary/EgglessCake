@@ -191,6 +191,10 @@ const fetchWalletTransactions = async () => {
   }
 };
 
+const AddMoneyinWallet=()=>{
+  
+}
+
 
 // Get Payment Methods
 const getPaymentMethods = () => {

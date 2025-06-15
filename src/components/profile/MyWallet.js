@@ -88,6 +88,12 @@ const MyWallet = () => {
         <p className="text-3xl font-bold">₹{user?.wallet?.balance.toFixed(2) || 0}</p>
       </div>
 
+      <button 
+        onClick={handleOpen}
+        className='w-full text-center bg-gradient-to-r from-[#e098b0] to-[#d88aa2] rounded-lg p-2 text-white mb-4'
+      >
+        Add Money
+      </button>
 
       {/* Transaction History */}
       <div>
@@ -110,6 +116,39 @@ const MyWallet = () => {
       </div>
     </div>
 
+      {/* Add Money Dialog */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Add Money to Wallet</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Amount"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            InputProps={{
+              startAdornment: <span className="mr-2">₹</span>
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button 
+            onClick={() => {
+              // TODO: Implement add money functionality
+              handleClose();
+            }}
+            variant="contained"
+            color="primary"
+            disabled={!amount || loading}
+          >
+            {loading ? <CircularProgress size={24} /> : 'Add Money'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
