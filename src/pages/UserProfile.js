@@ -231,9 +231,6 @@ const UserProfile = () => {
     { id: 2, title: 'My Orders', icon: '📦', component: 'orders' },
     { id: 3, title: 'My Wallet', icon: '💰', component: 'wallet' },
     { id: 4, title: 'Address Book', icon: '📚', component: 'address' },
-    { id: 5, title: 'Manage Saved UPI', icon: '💳', component: 'upi' },
-    { id: 6, title: 'My Account', icon: '🔑', component: 'account' },
-    { id: 7, title: 'Account Settings', icon: '⚙️', component: 'settings' },
   ];
 
   const handleEdit = () => {

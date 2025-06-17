@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { HoveredLink, Menu, MenuItem, ProductItem } from "../ui/navbar-menu";
 import { cn } from "../lib/utils";
 import { useNavigate } from 'react-router-dom';
@@ -12,12 +12,30 @@ export function NavbarDemo() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     // Add your search logic here
@@ -140,10 +158,12 @@ export function NavbarDemo() {
         </div>
 
         {/* Mobile menu with search */}
-        <div className={cn(
-          "relative w-full transition-all duration-300 ease-in-out bg-white",
-          isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none md:hidden"
-        )}>
+        <div 
+          ref={mobileMenuRef}
+          className={cn(
+            "relative w-full transition-all duration-300 ease-in-out bg-white",
+            isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none md:hidden"
+          )}>
           {/* Mobile search input */}
           <div className="relative w-full mt-2 mb-4">
             <form onSubmit={handleSearch}>

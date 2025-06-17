@@ -1,35 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
-
 import {
   Box,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
   Button,
   TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Alert,
   CircularProgress,
-  Chip,
-  IconButton,
-  Tooltip
 } from '@mui/material';
-import { Add as AddIcon, Info as InfoIcon, Receipt as ReceiptIcon } from '@mui/icons-material';
-import axios from 'axios';
 import {
-  fetchWalletTransactions
+  fetchWalletTransactions ,AddMoneyinWallet
 } from '../../services/paymentServices';
 
 const MyWallet = () => {
@@ -139,6 +122,7 @@ const MyWallet = () => {
           <Button 
             onClick={() => {
               // TODO: Implement add money functionality
+              AddMoneyinWallet(amount,user)
               handleClose();
             }}
             variant="contained"

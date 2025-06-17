@@ -2,7 +2,7 @@ import axios from 'axios';
 import { SiRazorpay } from "react-icons/si";
 import { CiWallet } from "react-icons/ci";
 import { BsCash } from "react-icons/bs";
-const API_URL = 'https://eggless-backend-1.onrender.com';
+const API_URL = 'http://localhost:9000';
 const api = axios.create({
     baseURL: API_URL,
     headers: {
@@ -191,9 +191,72 @@ const fetchWalletTransactions = async () => {
   }
 };
 
-const AddMoneyinWallet=()=>{
-  
-}
+const AddMoneyinWallet = async (amount, userData) => {
+  try {
+    const res = await initializeRazorpay();
+    if (!res) throw new Error('Razorpay SDK failed to load');
+
+    // Step 1: Create order for wallet top-up
+    const order = await api.post('/payment/wallet/add', { amount });
+    const orderData = order.data;
+
+    return new Promise((resolve, reject) => {
+      const options = {
+        key: 'rzp_test_1FGhUyAJx6vnYE',
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'EggLess Wallet Top-up',
+        description: 'Add money to wallet',
+        order_id: orderData.id,
+
+        handler: async function (response) {
+          try {
+            // Step 2: Verify the payment
+            const verifyRes = await api.post('/payment/wallet/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              amount
+            });
+
+            resolve({
+              success: true,
+              data: verifyRes.data
+            });
+          } catch (err) {
+            console.error('Verification failed:', err);
+            reject(new Error('Wallet verification failed'));
+          }
+        },
+
+        prefill: {
+          name: userData?.name || 'Test User',
+          email: userData?.email || 'test@example.com',
+          contact: userData?.phoneNumber || '9999999999',
+        },
+
+        theme: { color: '#272361' }
+      };
+
+      const rzp = new window.Razorpay(options);
+
+      rzp.on('payment.failed', function (response) {
+        console.error('Payment failed:', response.error);
+        reject(new Error(response.error.description || 'Payment failed'));
+      });
+
+      rzp.on('modal.closed', function () {
+        reject(new Error('Payment cancelled by user'));
+      });
+
+      rzp.open();
+    });
+  } catch (error) {
+    console.error('Error in AddMoneyinWallet:', error);
+    throw error;
+  }
+};
+
 
 
 // Get Payment Methods
@@ -243,5 +306,6 @@ export {
   handleWalletPayment,
   getPaymentMethods,
   getPaymentStatus,
-  fetchWalletTransactions
+  fetchWalletTransactions,
+  AddMoneyinWallet
 }; 
